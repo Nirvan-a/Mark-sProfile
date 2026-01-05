@@ -456,7 +456,7 @@ export function WritingFlowPanel({
 
   // 使用新的细粒度进度系统
   const percent = Math.round(progress.overallProgress)
-  const progressDescriptionText = progress.progressDescription
+  // const progressDescriptionText = progress.progressDescription  // 未使用，保留供将来使用
   
   // 计算当前展示的章节索引
   const displayChapterIndex = (() => {
@@ -482,10 +482,10 @@ export function WritingFlowPanel({
   // 使用 displayChapterIndex 获取展示的章节信息（交互模式下使用手动选中的）
   const displayIndex = displayChapterIndex > 0 ? displayChapterIndex - 1 : currentIndex
   const currentSectionMeta = sections[displayIndex] || sections[sections.length - 1] || { l2: '—', l1: '—' }
-  const runningStep =
-    activeSection?.steps.find((st) => st.status === 'running') ||
-    activeSection?.steps.find((st) => st.status === 'completed') ||
-    activeSection?.steps.find((st) => st.status === 'pending')
+  // const runningStep =
+  //   activeSection?.steps.find((st) => st.status === 'running') ||
+  //   activeSection?.steps.find((st) => st.status === 'completed') ||
+  //   activeSection?.steps.find((st) => st.status === 'pending')
   // const currentStageText =
   //   isTerminated
   //     ? '已终止'
