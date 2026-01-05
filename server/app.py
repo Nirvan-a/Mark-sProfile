@@ -104,12 +104,12 @@ cors_origins = [
 ]
 
 # 从环境变量读取额外的允许来源（用于 Cloudflare Pages 等）
+# 格式：CORS_ORIGINS=https://your-frontend.pages.dev,https://your-custom-domain.com
 additional_origins = os.getenv("CORS_ORIGINS", "").split(",")
 cors_origins.extend([origin.strip() for origin in additional_origins if origin.strip()])
 
-# 添加 Cloudflare Pages 默认域名模式（如果使用）
-# 注意：实际部署时建议使用自定义域名，这里只是示例
-cors_origins.append("https://*.pages.dev")  # Cloudflare Pages 默认域名
+# 过滤掉空字符串
+cors_origins = [origin for origin in cors_origins if origin]
 
 app.add_middleware(
     CORSMiddleware,

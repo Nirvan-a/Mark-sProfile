@@ -1,0 +1,13 @@
+# Cloudflare Pages 配置文件
+# 此文件用于 Cloudflare Pages 部署配置
+
+name = "profile-page"
+compatibility_date = "2024-01-01"
+
+# Pages 项目配置
+# 注意：Cloudflare Pages 主要通过 Web UI 配置
+# 此文件主要用于本地开发或 CI/CD
+
+[env.production]
+name = "profile-page"
+
