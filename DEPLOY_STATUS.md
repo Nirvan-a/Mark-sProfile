@@ -52,7 +52,7 @@
    - **Start Command**: `uvicorn app:app --host 0.0.0.0 --port $PORT`
    - **Plan**: `Free`
 4. 添加环境变量:
-   - `PYTHON_VERSION` = `3.11`
+   - `PYTHON_VERSION` = `3.11.0`
    - `DASHSCOPE_API_KEY` = `<你的API密钥>`
    - `CORS_ORIGINS` = `<前端URL>` (部署前端后填写)
 5. 点击 **"Create Web Service"**
@@ -94,7 +94,7 @@ wrangler pages deployment list --project-name="profile-page"
 - `VITE_API_BASE_URL` = `https://your-render-service.onrender.com`
 
 ### Render
-- `PYTHON_VERSION` = `3.11`
+- `PYTHON_VERSION` = `3.11.0`
 - `DASHSCOPE_API_KEY` = `<你的API密钥>`
 - `CORS_ORIGINS` = `https://your-frontend.pages.dev`
 

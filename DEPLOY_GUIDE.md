@@ -43,7 +43,7 @@
 
 | 变量名 | 值 | 说明 |
 |--------|-----|------|
-| `PYTHON_VERSION` | `3.11` | Python 版本 |
+| `PYTHON_VERSION` | `3.11.0` | Python 版本（必须是完整版本号，如 3.11.0） |
 | `DASHSCOPE_API_KEY` | `你的API密钥` | 通义千问 API Key |
 | `CORS_ORIGINS` | `https://your-frontend.pages.dev` | 前端域名（先留空，部署前端后再填） |
 
