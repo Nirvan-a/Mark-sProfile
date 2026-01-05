@@ -38,14 +38,16 @@ type ChapterData = {
   retrieval_results?: Array<{  // 检索结果
     source: string
     title: string
-    url: string
+    url?: string
     snippet: string
+    filename?: string  // 知识库结果可能有文件名
   }>
   filtered_results?: Array<{  // 筛选结果
     source: string
     title: string
-    url: string
+    url?: string
     snippet: string
+    filename?: string  // 知识库结果可能有文件名
   }>
   history_sections?: string[]  // 历史章节标题
   is_additional_retrieval?: boolean  // 是否为额外检索
@@ -53,14 +55,16 @@ type ChapterData = {
   additional_retrieval_results?: Array<{  // 额外检索结果
     source: string
     title: string
-    url: string
+    url?: string
     snippet: string
+    filename?: string  // 知识库结果可能有文件名
   }>
   additional_filtered_results?: Array<{  // 额外筛选结果
     source: string
     title: string
-    url: string
+    url?: string
     snippet: string
+    filename?: string  // 知识库结果可能有文件名
   }>
 }
 
@@ -482,11 +486,11 @@ export function WritingFlowPanel({
     activeSection?.steps.find((st) => st.status === 'running') ||
     activeSection?.steps.find((st) => st.status === 'completed') ||
     activeSection?.steps.find((st) => st.status === 'pending')
-  const currentStageText =
-    isTerminated
-      ? '已终止'
-      : (runningStep?.title) ||
-        (loadingPhase === 'generating-outline' ? '规划大纲中…' : '等待开始')
+  // const currentStageText =
+  //   isTerminated
+  //     ? '已终止'
+  //     : (runningStep?.title) ||
+  //       (loadingPhase === 'generating-outline' ? '规划大纲中…' : '等待开始')
 
   const statusState = isTerminated
     ? 'terminated'
@@ -510,7 +514,7 @@ export function WritingFlowPanel({
   })()
 
   // 使用从 SmartReport 传递的进度描述文本（已包含所有阶段的细粒度描述）
-  const progressDescription = progressDescriptionText
+  // const progressDescription = progressDescriptionText
 
   return (
     <div className={`wf-panel ${className ?? ''}`}>

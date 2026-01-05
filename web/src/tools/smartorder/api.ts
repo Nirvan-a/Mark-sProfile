@@ -65,7 +65,7 @@ export function extractAssistantContent(response: DashScopeResponse): string {
   }
 
   if (Array.isArray(content)) {
-    return content
+    return (content as any[])
       .map((seg: any) => seg?.text || seg?.content || '')
       .join('')
   }

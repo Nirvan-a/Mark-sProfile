@@ -1,7 +1,8 @@
 /**
  * 通用 Modal 组件
  */
-import { ReactNode, useEffect } from 'react'
+import { useEffect } from 'react'
+import type { ReactNode } from 'react'
 import './Modal.css'
 
 export interface ModalProps {

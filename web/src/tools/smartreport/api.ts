@@ -194,6 +194,13 @@ export interface DeepResearchOutline {
   outline_markdown: string
 }
 
+export interface Citation {
+  source: string
+  title?: string
+  url?: string
+  snippet?: string
+}
+
 export interface DeepResearchWrittenSection {
   level1_title: string
   level2_titles: string[]  // 改为二级标题列表
@@ -269,7 +276,6 @@ export interface DeepResearchStreamEvent {
       missing_points?: string[]
     }
     written_content?: string  // 写作内容（用于字数统计）
-    sections?: DeepResearchSection[]  // 所有章节列表（用于索引计算）
   }
   error?: string
 }
