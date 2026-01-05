@@ -1,0 +1,124 @@
+/**
+ * 统一主题样式系统
+ * 基于问数工具的设计风格，提供全局可用的 CSS 变量和基础样式
+ */
+
+:root {
+  /* ===== 颜色系统 ===== */
+  /* 主色调 */
+  --color-primary: #2563eb;
+  --color-primary-dark: #1d4ed8;
+  --color-primary-light: #3b82f6;
+  --color-primary-bg: rgba(37, 99, 235, 0.1);
+  --color-primary-border: rgba(37, 99, 235, 0.2);
+
+  /* 文字颜色 */
+  --color-text-primary: #0f172a;
+  --color-text-secondary: #475569;
+  --color-text-tertiary: #64748b;
+  --color-text-inverse: #ffffff;
+
+  /* 背景颜色 */
+  --color-bg-primary: #ffffff;
+  --color-bg-secondary: #f8fafc;
+  --color-bg-tertiary: #f1f5f9;
+  --color-bg-overlay: rgba(255, 255, 255, 0.95);
+  --color-bg-overlay-light: rgba(255, 255, 255, 0.85);
+
+  /* 边框颜色 */
+  --color-border-primary: #e2e8f0;
+  --color-border-secondary: rgba(15, 23, 42, 0.1);
+  --color-border-tertiary: rgba(15, 23, 42, 0.12);
+
+  /* 状态颜色 */
+  --color-success: #10b981;
+  --color-error: #ef4444;
+  --color-warning: #f59e0b;
+  --color-info: #3b82f6;
+
+  /* ===== 渐变 ===== */
+  --gradient-primary: linear-gradient(135deg, #2563eb, #3b82f6);
+  --gradient-primary-hover: linear-gradient(135deg, #1d4ed8, #2563eb);
+  --gradient-bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+
+  /* ===== 圆角 ===== */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 24px;
+  --radius-full: 999px;
+
+  /* ===== 阴影 ===== */
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 6px 16px rgba(15, 23, 42, 0.12);
+  --shadow-lg: 0 10px 25px rgba(15, 23, 42, 0.15);
+  --shadow-xl: 0 12px 30px rgba(15, 23, 42, 0.15);
+  --shadow-2xl: 0 20px 60px rgba(0, 0, 0, 0.3);
+  --shadow-primary: 0 10px 30px rgba(37, 99, 235, 0.25);
+
+  /* ===== 间距 ===== */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 12px;
+  --spacing-lg: 16px;
+  --spacing-xl: 24px;
+  --spacing-2xl: 32px;
+  --spacing-3xl: 48px;
+
+  /* ===== 字体 ===== */
+  --font-family: 'Inter', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --font-family-mono: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace;
+
+  --font-size-xs: 12px;
+  --font-size-sm: 13px;
+  --font-size-base: 14px;
+  --font-size-md: 16px;
+  --font-size-lg: 18px;
+  --font-size-xl: 20px;
+  --font-size-2xl: 24px;
+  --font-size-3xl: 28px;
+  --font-size-4xl: 36px;
+
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* ===== 过渡动画 ===== */
+  --transition-fast: 0.2s ease;
+  --transition-base: 0.3s ease;
+  --transition-slow: 0.5s ease;
+
+  /* ===== Z-index 层级 ===== */
+  --z-base: 1;
+  --z-dropdown: 10;
+  --z-sticky: 50;
+  --z-modal: 100;
+  --z-tooltip: 200;
+  --z-modal-overlay: 1000;
+  --z-modal-content: 1001;
+}
+
+/* ===== 全局基础样式 ===== */
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background-color: var(--color-bg-secondary);
+  color: var(--color-text-primary);
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  line-height: 1.6;
+}
+

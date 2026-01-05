@@ -1,0 +1,534 @@
+/* 参考 PromptEditor 的样式 */
+.kb-config-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: var(--z-modal-overlay, 1000);
+  backdrop-filter: blur(4px);
+}
+
+.kb-config-modal {
+  background: var(--color-bg-primary, #ffffff);
+  border-radius: var(--radius-lg, 12px);
+  width: 90%;
+  max-width: 1000px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--shadow-2xl, 0 25px 50px -12px rgba(0, 0, 0, 0.25));
+  overflow: hidden;
+}
+
+.kb-config-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-xl, 24px);
+  border-bottom: 1px solid var(--color-border-primary, #e1e4e8);
+}
+
+.kb-config-header h2 {
+  margin: 0;
+  font-size: var(--font-size-xl, 20px);
+  font-weight: var(--font-weight-semibold, 600);
+  color: var(--color-text-primary, #24292f);
+}
+
+.kb-config-close {
+  background: none;
+  border: none;
+  font-size: 28px;
+  line-height: 1;
+  color: var(--color-text-tertiary, #8b949e);
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm, 4px);
+  transition: all var(--transition-fast, 0.15s);
+}
+
+.kb-config-close:hover {
+  background: var(--color-bg-tertiary, #f6f8fa);
+  color: var(--color-text-primary, #24292f);
+}
+
+.kb-config-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--color-border-primary, #e1e4e8);
+  padding: 0 var(--spacing-xl, 24px);
+}
+
+.kb-config-tab {
+  background: none;
+  border: none;
+  padding: var(--spacing-md, 16px) var(--spacing-xl, 24px);
+  font-size: var(--font-size-base, 14px);
+  color: var(--color-text-tertiary, #8b949e);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: all var(--transition-fast, 0.15s);
+}
+
+.kb-config-tab:hover {
+  color: var(--color-primary, #0969da);
+}
+
+.kb-config-tab.active {
+  color: var(--color-primary, #0969da);
+  border-bottom-color: var(--color-primary, #0969da);
+  font-weight: var(--font-weight-medium, 500);
+}
+
+.kb-config-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--spacing-xl, 24px);
+}
+
+.kb-config-section {
+  margin-bottom: var(--spacing-xl, 24px);
+  padding-bottom: var(--spacing-xl, 24px);
+  border-bottom: 1px solid var(--color-border-primary, #e1e4e8);
+}
+
+.kb-config-section:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.kb-config-section h3 {
+  margin: 0 0 var(--spacing-md, 16px) 0;
+  font-size: var(--font-size-lg, 16px);
+  font-weight: var(--font-weight-semibold, 600);
+  color: var(--color-text-primary, #24292f);
+}
+
+.kb-config-upload-btn {
+  padding: var(--spacing-md, 16px) var(--spacing-lg, 20px);
+  background: var(--color-primary, #0969da);
+  color: var(--color-text-inverse, #ffffff);
+  border: none;
+  border-radius: var(--radius-md, 6px);
+  font-size: var(--font-size-base, 14px);
+  font-weight: var(--font-weight-medium, 500);
+  cursor: pointer;
+  transition: all var(--transition-fast, 0.15s);
+}
+
+.kb-config-upload-btn:hover:not(:disabled) {
+  background: var(--color-primary-dark, #0860ca);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md, 0 4px 6px rgba(0, 0, 0, 0.1));
+}
+
+.kb-config-upload-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.kb-config-hint {
+  font-size: var(--font-size-sm, 12px);
+  color: var(--color-text-secondary, #57606a);
+  margin-top: var(--spacing-sm, 8px);
+}
+
+.kb-config-maintenance-buttons {
+  display: flex;
+  gap: var(--spacing-md, 16px);
+  flex-wrap: wrap;
+}
+
+.kb-config-btn {
+  padding: var(--spacing-sm, 8px) var(--spacing-lg, 20px);
+  border-radius: var(--radius-sm, 4px);
+  font-size: var(--font-size-base, 14px);
+  font-weight: var(--font-weight-medium, 500);
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all var(--transition-fast, 0.15s);
+}
+
+.kb-config-btn-primary {
+  background: var(--color-primary, #0969da);
+  color: var(--color-text-inverse, #ffffff);
+}
+
+.kb-config-btn-primary:hover:not(:disabled) {
+  background: var(--color-primary-dark, #0860ca);
+}
+
+.kb-config-btn-warning {
+  background: #f59e0b;
+  color: var(--color-text-inverse, #ffffff);
+}
+
+.kb-config-btn-warning:hover:not(:disabled) {
+  background: #d97706;
+}
+
+.kb-config-btn-danger {
+  background: #ef4444;
+  color: var(--color-text-inverse, #ffffff);
+}
+
+.kb-config-btn-danger:hover:not(:disabled) {
+  background: #dc2626;
+}
+
+.kb-config-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.kb-config-search-box {
+  display: flex;
+  gap: var(--spacing-sm, 8px);
+  margin-bottom: var(--spacing-md, 16px);
+}
+
+.kb-config-search-input {
+  flex: 1;
+  padding: var(--spacing-sm, 8px) var(--spacing-md, 16px);
+  border: 1px solid var(--color-border-primary, #e1e4e8);
+  border-radius: var(--radius-md, 6px);
+  font-size: var(--font-size-base, 14px);
+  color: var(--color-text-primary, #24292f);
+}
+
+.kb-config-search-input:focus {
+  outline: none;
+  border-color: var(--color-primary, #0969da);
+  box-shadow: 0 0 0 3px var(--color-primary-bg, rgba(9, 105, 218, 0.1));
+}
+
+.kb-config-search-results {
+  margin-top: var(--spacing-md, 16px);
+}
+
+.kb-config-results-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-sm, 8px);
+  font-size: var(--font-size-sm, 12px);
+  color: var(--color-text-secondary, #57606a);
+}
+
+.kb-config-results-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm, 8px);
+}
+
+.kb-config-result-item {
+  padding: var(--spacing-md, 16px);
+  background: var(--color-bg-secondary, #f6f8fa);
+  border-radius: var(--radius-md, 6px);
+  border: 1px solid var(--color-border-primary, #e1e4e8);
+}
+
+.kb-config-result-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-xs, 4px);
+}
+
+.kb-config-result-filename {
+  font-weight: var(--font-weight-medium, 500);
+  color: var(--color-text-primary, #24292f);
+}
+
+.kb-config-result-link {
+  color: var(--color-primary, #0969da);
+  text-decoration: none;
+  font-weight: var(--font-weight-medium, 500);
+}
+
+.kb-config-result-link:hover {
+  text-decoration: underline;
+}
+
+.kb-config-result-url {
+  font-size: var(--font-size-xs, 11px);
+  color: var(--color-text-secondary, #57606a);
+  word-break: break-all;
+}
+
+.kb-config-result-relevance {
+  font-size: var(--font-size-xs, 11px);
+  color: var(--color-text-secondary, #57606a);
+}
+
+.kb-config-result-content {
+  font-size: var(--font-size-sm, 12px);
+  color: var(--color-text-secondary, #57606a);
+  line-height: 1.5;
+}
+
+.kb-config-empty {
+  padding: var(--spacing-xl, 24px);
+  text-align: center;
+  color: var(--color-text-secondary, #57606a);
+}
+
+.kb-config-docs-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm, 8px);
+}
+
+.kb-config-doc-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-sm, 8px) var(--spacing-md, 16px);
+  background: var(--color-bg-secondary, #f6f8fa);
+  border-radius: var(--radius-md, 6px);
+  border: 1px solid var(--color-border-primary, #e1e4e8);
+}
+
+.kb-config-doc-info {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm, 8px);
+  flex: 1;
+}
+
+.kb-config-doc-name {
+  font-weight: var(--font-weight-medium, 500);
+  color: var(--color-text-primary, #24292f);
+}
+
+.kb-config-doc-meta {
+  font-size: var(--font-size-sm, 12px);
+  color: var(--color-text-secondary, #57606a);
+}
+
+.kb-config-delete-btn {
+  background: var(--color-bg-primary, #ffffff);
+  border: 1px solid var(--color-border-primary, #e1e4e8);
+  color: var(--color-text-secondary, #57606a);
+  font-size: var(--font-size-sm, 12px);
+  cursor: pointer;
+  padding: var(--spacing-xs, 4px) var(--spacing-md, 16px);
+  border-radius: var(--radius-sm, 4px);
+  transition: all var(--transition-fast, 0.15s);
+}
+
+.kb-config-delete-btn:hover {
+  background: var(--color-danger, #ef4444);
+  color: var(--color-text-inverse, #ffffff);
+  border-color: var(--color-danger, #ef4444);
+}
+
+.kb-config-loading {
+  padding: var(--spacing-xl, 24px);
+  text-align: center;
+  color: var(--color-text-secondary, #57606a);
+}
+
+.kb-config-chunks-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm, 8px);
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.kb-config-chunk-item {
+  padding: var(--spacing-md, 16px);
+  background: var(--color-bg-secondary, #f6f8fa);
+  border-radius: var(--radius-md, 6px);
+  border: 1px solid var(--color-border-primary, #e1e4e8);
+  cursor: pointer;
+  transition: all var(--transition-fast, 0.15s);
+}
+
+.kb-config-chunk-item:hover {
+  background: var(--color-bg-tertiary, #f0f2f5);
+  border-color: var(--color-primary, #0969da);
+}
+
+.kb-config-chunk-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-xs, 4px);
+}
+
+.kb-config-chunk-index {
+  font-weight: var(--font-weight-medium, 500);
+  color: var(--color-text-primary, #24292f);
+  font-size: var(--font-size-sm, 12px);
+}
+
+.kb-config-chunk-filename {
+  font-size: var(--font-size-sm, 12px);
+  color: var(--color-text-secondary, #57606a);
+}
+
+.kb-config-chunk-preview {
+  font-size: var(--font-size-sm, 12px);
+  color: var(--color-text-secondary, #57606a);
+  line-height: 1.5;
+}
+
+/* 片段详情弹窗 */
+.kb-config-chunk-modal {
+  background: var(--color-bg-primary, #ffffff);
+  border-radius: var(--radius-lg, 12px);
+  width: 90%;
+  max-width: 800px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--shadow-2xl, 0 25px 50px -12px rgba(0, 0, 0, 0.25));
+  overflow: hidden;
+}
+
+.kb-config-chunk-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-xl, 24px);
+  border-bottom: 1px solid var(--color-border-primary, #e1e4e8);
+}
+
+.kb-config-chunk-modal-header h3 {
+  margin: 0;
+  font-size: var(--font-size-lg, 16px);
+  font-weight: var(--font-weight-semibold, 600);
+  color: var(--color-text-primary, #24292f);
+}
+
+.kb-config-chunk-modal-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--spacing-xl, 24px);
+}
+
+.kb-config-chunk-detail-info {
+  margin-bottom: var(--spacing-lg, 20px);
+  padding-bottom: var(--spacing-lg, 20px);
+  border-bottom: 1px solid var(--color-border-primary, #e1e4e8);
+}
+
+.kb-config-chunk-detail-info p {
+  margin: var(--spacing-sm, 8px) 0;
+  color: var(--color-text-primary, #24292f);
+  font-size: var(--font-size-sm, 12px);
+}
+
+.kb-config-chunk-detail-content {
+  margin-top: var(--spacing-lg, 20px);
+}
+
+.kb-config-chunk-detail-content strong {
+  display: block;
+  margin-bottom: var(--spacing-sm, 8px);
+  color: var(--color-text-primary, #24292f);
+}
+
+.kb-config-chunk-full-content {
+  padding: var(--spacing-md, 16px);
+  background: var(--color-bg-secondary, #f6f8fa);
+  border-radius: var(--radius-md, 6px);
+  border: 1px solid var(--color-border-primary, #e1e4e8);
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  line-height: 1.6;
+  font-size: var(--font-size-sm, 12px);
+  color: var(--color-text-primary, #24292f);
+}
+
+/* 密码验证弹窗 */
+.kb-config-password-modal {
+  background: var(--color-bg-primary, #ffffff);
+  border-radius: var(--radius-lg, 12px);
+  width: 90%;
+  max-width: 400px;
+  box-shadow: var(--shadow-2xl, 0 25px 50px -12px rgba(0, 0, 0, 0.25));
+  overflow: hidden;
+}
+
+.kb-config-password-header {
+  padding: var(--spacing-xl, 24px);
+  border-bottom: 1px solid var(--color-border-primary, #e1e4e8);
+}
+
+.kb-config-password-header h3 {
+  margin: 0;
+  font-size: var(--font-size-lg, 16px);
+  font-weight: var(--font-weight-semibold, 600);
+  color: var(--color-text-primary, #24292f);
+}
+
+.kb-config-password-body {
+  padding: var(--spacing-xl, 24px);
+}
+
+.kb-config-password-input {
+  width: 100%;
+  padding: var(--spacing-md, 16px);
+  border: 1px solid var(--color-border-primary, #e1e4e8);
+  border-radius: var(--radius-md, 6px);
+  font-size: var(--font-size-base, 14px);
+  color: var(--color-text-primary, #24292f);
+}
+
+.kb-config-password-input:focus {
+  outline: none;
+  border-color: var(--color-primary, #0969da);
+  box-shadow: 0 0 0 3px var(--color-primary-bg, rgba(9, 105, 218, 0.1));
+}
+
+.kb-config-password-error {
+  margin-top: var(--spacing-sm, 8px);
+  color: #ef4444;
+  font-size: var(--font-size-sm, 12px);
+}
+
+.kb-config-password-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--spacing-sm, 8px);
+  padding: var(--spacing-lg, 20px) var(--spacing-xl, 24px);
+  border-top: 1px solid var(--color-border-primary, #e1e4e8);
+  background: var(--color-bg-secondary, #f6f8fa);
+}
+
+.kb-config-btn-cancel {
+  background: var(--color-bg-primary, #ffffff);
+  color: var(--color-text-tertiary, #8b949e);
+  border-color: var(--color-border-primary, #e1e4e8);
+}
+
+.kb-config-btn-cancel:hover {
+  background: var(--color-bg-tertiary, #f6f8fa);
+  color: var(--color-text-primary, #24292f);
+}
+
+.kb-config-btn-submit {
+  background: var(--color-primary, #0969da);
+  color: var(--color-text-inverse, #ffffff);
+}
+
+.kb-config-btn-submit:hover {
+  background: var(--color-primary-dark, #0860ca);
+}
+

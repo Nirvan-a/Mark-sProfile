@@ -1,0 +1,110 @@
+/* 手机边框 */
+.phone-frame {
+  width: 100%;
+  max-width: 375px;
+  height: 812px;
+  max-height: 90vh;
+  background: linear-gradient(180deg, #2a2a2a 0%, #1a1a1a 100%);
+  border-radius: 45px;
+  padding: 10px;
+  box-shadow: 
+    0 30px 80px rgba(0, 0, 0, 0.6),
+    0 0 0 3px rgba(255, 255, 255, 0.08) inset,
+    0 0 0 6px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(255, 255, 255, 0.05);
+  position: relative;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.phone-frame:hover {
+  transform: translateY(-5px);
+  box-shadow: 
+    0 40px 100px rgba(0, 0, 0, 0.7),
+    0 0 0 3px rgba(255, 255, 255, 0.1) inset,
+    0 0 0 6px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+/* 顶部听筒区域 - 已隐藏 */
+.phone-frame::before {
+  display: none;
+}
+
+.phone-frame-inner {
+  width: 100%;
+  height: 100%;
+  background: #000;
+  border-radius: 35px;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+}
+
+/* 刘海区域 - 已隐藏 */
+.phone-notch {
+  display: none;
+}
+
+.phone-speaker {
+  display: none;
+}
+
+.phone-camera {
+  display: none;
+}
+
+/* 屏幕内容区域 */
+.phone-screen {
+  flex: 1;
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+  background: #fff;
+}
+
+/* Home 指示器 */
+.phone-home-indicator {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 140px;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.35);
+  border-radius: 4px;
+  z-index: 20;
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.2);
+}
+
+/* 移动端适配 */
+@media (max-width: 768px) {
+  .phone-frame {
+    max-width: 100%;
+    max-height: calc(100dvh - 40px);
+    width: 100%;
+    height: auto;
+    aspect-ratio: 375 / 812;
+    border-radius: 30px;
+    padding: 8px;
+    box-shadow: 
+      0 20px 60px rgba(0, 0, 0, 0.5),
+      0 0 0 2px rgba(255, 255, 255, 0.06) inset,
+      0 0 0 4px rgba(0, 0, 0, 0.3),
+      0 0 0 1px rgba(255, 255, 255, 0.04);
+  }
+
+  .phone-frame:hover {
+    transform: translateY(-3px);
+  }
+}
+
+/* 平板端适配 */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .phone-frame {
+    max-width: 400px;
+    height: 850px;
+  }
+}
+

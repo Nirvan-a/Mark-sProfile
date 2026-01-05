@@ -1,0 +1,193 @@
+.prompt-editor-trigger {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: opacity var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: var(--spacing-xs);
+}
+
+.prompt-editor-trigger img {
+  width: 20px;
+  height: 20px;
+  display: block;
+}
+
+.prompt-editor-trigger:hover {
+  opacity: 0.7;
+}
+
+.password-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: var(--z-modal-content);
+  backdrop-filter: blur(4px);
+}
+
+.password-modal {
+  background: var(--color-bg-primary);
+  border-radius: var(--radius-lg);
+  width: 90%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--shadow-2xl);
+  overflow: hidden;
+}
+
+.password-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-xl) var(--spacing-xl);
+  border-bottom: 1px solid var(--color-border-primary);
+}
+
+.password-modal-header h3 {
+  margin: 0;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+}
+
+.password-modal-close {
+  background: none;
+  border: none;
+  font-size: 28px;
+  line-height: 1;
+  color: var(--color-text-tertiary);
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+}
+
+.password-modal-close:hover {
+  background: var(--color-bg-tertiary);
+  color: var(--color-text-primary);
+}
+
+.password-modal-content {
+  padding: var(--spacing-xl);
+}
+
+.password-input {
+  width: 100%;
+  padding: var(--spacing-md);
+  border: 1px solid var(--color-border-primary);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-base);
+  color: var(--color-text-primary);
+  background: var(--color-bg-primary);
+  box-sizing: border-box;
+}
+
+.password-input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-bg);
+}
+
+.password-error {
+  margin-top: var(--spacing-md);
+  font-size: var(--font-size-sm);
+  color: var(--color-error);
+}
+
+.password-modal-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-lg) var(--spacing-xl);
+  border-top: 1px solid var(--color-border-primary);
+  background: var(--color-bg-secondary);
+  border-bottom-left-radius: var(--radius-lg);
+  border-bottom-right-radius: var(--radius-lg);
+}
+
+.password-btn {
+  padding: var(--spacing-sm) var(--spacing-lg);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all var(--transition-fast);
+}
+
+.password-btn-cancel {
+  background: var(--color-bg-primary);
+  color: var(--color-text-tertiary);
+  border-color: var(--color-border-primary);
+}
+
+.password-btn-cancel:hover {
+  background: var(--color-bg-tertiary);
+  color: var(--color-text-primary);
+}
+
+.password-btn-submit {
+  background: var(--gradient-primary);
+  color: var(--color-text-inverse);
+}
+
+.password-btn-submit:hover {
+  background: var(--gradient-primary-hover);
+}
+
+@media (max-width: 640px) {
+  .prompt-editor-trigger {
+    margin-bottom: 2px;
+  }
+
+  .prompt-editor-trigger img {
+    width: 18px;
+    height: 18px;
+  }
+
+  .password-modal {
+    width: 95%;
+    max-width: none;
+  }
+
+  .password-modal-header {
+    padding: 16px 20px;
+  }
+
+  .password-modal-header h3 {
+    font-size: 16px;
+  }
+
+  .password-modal-content {
+    padding: 20px;
+  }
+
+  .password-modal-actions {
+    padding: 14px 20px;
+    flex-direction: column-reverse;
+    gap: 8px;
+  }
+
+  .password-btn {
+    width: 100%;
+    padding: 12px 16px;
+    min-height: 44px;
+  }
+}
+

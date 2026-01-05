@@ -1,0 +1,1369 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <title>完整文章写作流程动画组件 Demo</title>
+  <style>
+    :root{
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      font-size: 14px;
+      color: #0f172a;
+    }
+    body{
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f3f4f6;
+      padding: 16px;
+    }
+
+    .writing-flow-panel{
+      width: 90vw;
+      max-width: 1200px;
+      height: 480px;
+      border-radius: 16px;
+      border: 1px solid #e5e7eb;
+      box-shadow: 0 18px 40px rgba(15,23,42,.06);
+      background: #f9fafb;
+      padding: 12px 16px 14px;
+      display: grid;
+      grid-template-columns: minmax(250px, 300px) minmax(0, 1fr);
+      grid-template-rows: auto auto minmax(0, 1fr);
+      gap: 10px 16px;
+      box-sizing: border-box;
+    }
+
+    .wf-header{
+      grid-column: 1 / -1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid #e5e7eb;
+      margin-bottom: 2px;
+    }
+    .wf-header-left{
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .wf-title{
+      font-size: 15px;
+      font-weight: 600;
+      color: #111827;
+    }
+    .wf-tag{
+      font-size: 11px;
+      padding: 2px 6px;
+      border-radius: 999px;
+      border: 1px solid #d1d5db;
+      background: #f9fafb;
+      color: #4b5563;
+    }
+    .wf-status-chip{
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: #e0f2fe;
+      color: #075985;
+      font-weight: 500;
+    }
+    .wf-dot{
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #22c55e;
+      box-shadow: 0 0 0 0 rgba(34,197,94,.6);
+      animation: dotPulse 1.4s ease-out infinite;
+    }
+    @keyframes dotPulse{
+      0%{ box-shadow: 0 0 0 0 rgba(34,197,94,.6); }
+      70%{ box-shadow: 0 0 0 8px rgba(34,197,94,0); }
+      100%{ box-shadow: 0 0 0 0 rgba(34,197,94,0); }
+    }
+
+    .wf-progress-wrapper{
+      grid-column: 1 / -1;
+      margin-bottom: 2px;
+    }
+    .wf-progress-row{
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      font-size: 11px;
+      color: #6b7280;
+      margin-bottom: 3px;
+    }
+    .wf-progress-label strong{
+      color: #111827;
+    }
+    .wf-progress-bar{
+      position: relative;
+      height: 5px;
+      border-radius: 999px;
+      background: #e5e7eb;
+      overflow: hidden;
+    }
+    .wf-progress-inner{
+      position: absolute;
+      inset: 0;
+      width: 0%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #3b82f6, #22c55e);
+      transition: width .4s ease-out;
+    }
+
+    .wf-col-left{
+      grid-row: 3 / 4;
+      grid-column: 1 / 2;
+      border-right: 1px dashed #e5e7eb;
+      padding-right: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      min-height: 0;
+    }
+
+    .wf-section-list{
+      background: #f9fafb;
+      border-radius: 12px;
+      border: 1px solid #e5e7eb;
+      padding: 6px 8px;
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+    }
+    .wf-section-list-title{
+      font-size: 12px;
+      font-weight: 600;
+      color: #4b5563;
+      margin-bottom: 4px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .wf-section-items{
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      overflow: auto;
+      padding-right: 4px;
+      min-height: 0;
+    }
+    .wf-section-item{
+      display: flex;
+      gap: 8px;
+      font-size: 12px;
+      padding: 3px 5px;
+      border-radius: 8px;
+      align-items: flex-start;
+      cursor: default;
+    }
+    .wf-section-item-labels{
+      flex: 1;
+      min-width: 0;
+    }
+    .wf-section-l2{
+      font-weight: 500;
+      color: #111827;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .wf-section-l1{
+      font-size: 11px;
+      color: #6b7280;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-top: 1px;
+    }
+    .wf-section-status{
+      font-size: 11px;
+      padding: 1px 6px;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      white-space: nowrap;
+    }
+    .wf-section-item[data-state="pending"]{
+      background: transparent;
+      color: #6b7280;
+    }
+    .wf-section-item[data-state="pending"] .wf-section-status{
+      border-color: #e5e7eb;
+      color: #9ca3af;
+    }
+    .wf-section-item[data-state="active"]{
+      background: #eff6ff;
+    }
+    .wf-section-item[data-state="active"] .wf-section-status{
+      border-color: #3b82f6;
+      color: #1d4ed8;
+      background: #dbeafe;
+    }
+    .wf-section-item[data-state="done"]{
+      background: #ecfdf3;
+    }
+    .wf-section-item[data-state="done"] .wf-section-status{
+      border-color: #16a34a;
+      color: #15803d;
+      background: #dcfce7;
+    }
+    .wf-section-index-badge{
+      width: 18px;
+      height: 18px;
+      border-radius: 999px;
+      border: 1px solid #d1d5db;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      color: #6b7280;
+      margin-top: 2px;
+      flex-shrink: 0;
+      background: white;
+    }
+
+    .wf-global-stages{
+      background: #f9fafb;
+      border-radius: 12px;
+      border: 1px solid #e5e7eb;
+      padding: 6px 8px;
+    }
+    .wf-global-title{
+      font-size: 12px;
+      font-weight: 600;
+      color: #4b5563;
+      margin-bottom: 4px;
+    }
+    .wf-global-chips{
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .wf-stage-chip{
+      font-size: 11px;
+      padding: 3px 7px;
+      border-radius: 999px;
+      border: 1px dashed #d1d5db;
+      color: #6b7280;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: #fff;
+    }
+    .wf-stage-chip::before{
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      border: 1px solid #d1d5db;
+      background: #f9fafb;
+    }
+    .wf-stage-chip[data-state="done"]{
+      border-style: solid;
+      border-color: #16a34a;
+      color: #15803d;
+      background: #ecfdf3;
+    }
+    .wf-stage-chip[data-state="done"]::before{
+      background: #22c55e;
+      border-color: #16a34a;
+    }
+    .wf-stage-chip[data-state="active"]{
+      border-style: solid;
+      border-color: #3b82f6;
+      color: #1d4ed8;
+      background: #dbeafe;
+    }
+    .wf-stage-chip[data-state="active"]::before{
+      background: #3b82f6;
+      border-color: #1d4ed8;
+    }
+    .wf-stage-chip[data-state="pending"]{
+      opacity: .75;
+    }
+
+    .wf-col-right{
+      grid-row: 3 / 4;
+      grid-column: 2 / 3;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
+      grid-template-areas:
+        "timeline"
+        "bottom";
+      gap: 8px 10px;
+      min-width: 0;
+      min-height: 0;
+    }
+
+    .wf-timeline{
+      grid-area: timeline;
+      border-radius: 12px;
+      border: 1px solid #e5e7eb;
+      background: #ffffff;
+      padding: 6px 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-height: 0;
+    }
+    .wf-timeline-header{
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 8px;
+    }
+    .wf-timeline-header-left{
+      min-width: 0;
+    }
+    .wf-timeline-label{
+      font-size: 11px;
+      color: #6b7280;
+      margin-bottom: 2px;
+    }
+    .wf-timeline-title{
+      font-size: 13px;
+      font-weight: 600;
+      color: #111827;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .wf-timeline-sub{
+      font-size: 11px;
+      color: #6b7280;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-top: 1px;
+    }
+    .wf-timeline-meta{
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: baseline;
+      justify-content: flex-end;
+      font-size: 11px;
+      color: #6b7280;
+    }
+    .wf-timeline-meta-pill{
+      padding: 2px 6px;
+      border-radius: 999px;
+      background: #f3f4f6;
+      border: 1px solid #e5e7eb;
+      white-space: nowrap;
+    }
+    .wf-timeline-meta-pill.main{
+      color: #1d4ed8;
+      border-color: #bfdbfe;
+      background: #eff6ff;
+    }
+
+    .wf-step-list{
+      position: relative;
+      padding-left: 18px;
+      margin-left: 3px;
+      min-height: 0;
+      overflow: auto;
+    }
+    .wf-step-list::before{
+      content: "";
+      position: absolute;
+      left: 5px;
+      top: 3px;
+      bottom: 3px;
+      border-left: 1px dashed #d1d5db;
+    }
+    .wf-step-item{
+      position: relative;
+      padding: 4px 0 4px 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      cursor: default;
+    }
+    .wf-step-item::before{
+      content: "";
+      position: absolute;
+      left: -10px;
+      top: 10px;
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: #e5e7eb;
+      border: 1px solid #d1d5db;
+    }
+    .wf-step-title{
+      font-size: 12px;
+      color: #111827;
+    }
+    .wf-step-desc{
+      font-size: 11px;
+      color: #6b7280;
+    }
+    .wf-step-badge{
+      font-size: 10px;
+      border-radius: 999px;
+      padding: 0 5px;
+      border: 1px solid #e5e7eb;
+      color: #6b7280;
+      align-self: flex-start;
+      margin-top: 1px;
+    }
+
+    .wf-step-item[data-state="done"] .wf-step-title{
+      color: #15803d;
+    }
+    .wf-step-item[data-state="done"]::before{
+      background: #22c55e;
+      border-color: #16a34a;
+    }
+    .wf-step-item[data-state="done"] .wf-step-badge{
+      border-color: #bbf7d0;
+      background: #dcfce7;
+      color: #15803d;
+    }
+
+    .wf-step-item[data-state="active"]{
+      background: #eff6ff;
+      border-radius: 8px;
+      padding-right: 6px;
+    }
+    .wf-step-item[data-state="active"]::before{
+      background: #3b82f6;
+      border-color: #1d4ed8;
+      box-shadow: 0 0 0 0 rgba(59,130,246,.5);
+      animation: stepPulse 1.1s ease-out infinite;
+    }
+    @keyframes stepPulse{
+      0%{ box-shadow: 0 0 0 0 rgba(59,130,246,.5); }
+      60%{ box-shadow: 0 0 0 6px rgba(59,130,246,0); }
+      100%{ box-shadow: 0 0 0 0 rgba(59,130,246,0); }
+    }
+    .wf-step-item[data-state="active"] .wf-step-title{
+      color: #1d4ed8;
+    }
+    .wf-step-item[data-state="active"] .wf-step-desc{
+      color: #1d4ed8;
+    }
+    .wf-step-item[data-state="active"] .wf-step-badge{
+      border-color: #bfdbfe;
+      background: #dbeafe;
+      color: #1d4ed8;
+    }
+
+    .wf-step-item[data-state="pending"] .wf-step-title{
+      color: #6b7280;
+    }
+    .wf-step-item[data-state="pending"] .wf-step-desc{
+      color: #9ca3af;
+    }
+
+    .wf-bottom{
+      grid-area: bottom;
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+      grid-template-rows: minmax(0,1fr);
+      gap: 8px 10px;
+      min-width: 0;
+      min-height: 0;
+    }
+
+    .wf-detail{
+      border-radius: 12px;
+      border: 1px solid #e5e7eb;
+      background: #f9fafb;
+      padding: 6px 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      min-width: 0;
+      min-height: 0;
+      overflow: auto;
+    }
+    .wf-detail-header{
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      font-size: 11px;
+      color: #6b7280;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+    .wf-detail-header-title{
+      font-weight: 600;
+      color: #4b5563;
+    }
+    .wf-detail-header-step{
+      font-size: 11px;
+      color: #1d4ed8;
+    }
+
+    .wf-detail-metrics{
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 2px;
+      flex-shrink: 0;
+    }
+    .wf-detail-metric{
+      font-size: 11px;
+      padding: 2px 6px;
+      border-radius: 999px;
+      border: 1px solid #d1d5db;
+      background: #ffffff;
+      color: #4b5563;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .wf-detail-metric-label{
+      opacity: .8;
+    }
+    .wf-detail-metric-value{
+      font-weight: 600;
+      color: #111827;
+    }
+
+    .wf-detail-grids{
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0,1fr));
+      gap: 6px;
+      margin-top: 2px;
+      min-height: 0;
+      flex: 1;
+    }
+    .wf-detail-block{
+      background: #ffffff;
+      border-radius: 10px;
+      border: 1px solid #e5e7eb;
+      padding: 5px 6px;
+      min-height: 44px;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      min-width: 0;
+    }
+    .wf-detail-block-title{
+      font-size: 11px;
+      font-weight: 600;
+      color: #4b5563;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .wf-detail-block-sub{
+      font-size: 10px;
+      color: #9ca3af;
+    }
+    .wf-detail-list{
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      font-size: 11px;
+      color: #4b5563;
+      max-height: 52px;
+      overflow: hidden;
+    }
+    .wf-detail-list li{
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-bottom: 2px;
+    }
+    .wf-detail-query-pill{
+      display: inline-block;
+      max-width: 100%;
+      padding: 1px 6px;
+      border-radius: 999px;
+      background: #f3f4f6;
+      border: 1px solid #e5e7eb;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    }
+    .wf-detail-tag{
+      font-size: 10px;
+      padding: 0 4px;
+      border-radius: 999px;
+      border: 1px solid #d1d5db;
+      margin-left: 4px;
+      color: #6b7280;
+    }
+    .wf-detail-reason{
+      font-size: 11px;
+      color: #4b5563;
+      line-height: 1.4;
+      max-height: 52px;
+      overflow: hidden;
+    }
+
+    .wf-log{
+      border-radius: 12px;
+      border: 1px solid #e5e7eb;
+      background: #0b1120;
+      color: #e5e7eb;
+      padding: 6px 8px 5px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 11px;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+    .wf-log-header{
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 4px;
+      flex-shrink: 0;
+    }
+    .wf-log-title{
+      font-size: 11px;
+      color: #9ca3af;
+    }
+    .wf-log-status{
+      font-size: 11px;
+      color: #a5b4fc;
+    }
+    .wf-log-body{
+      flex: 1;
+      overflow: auto;
+      padding-right: 4px;
+    }
+    .wf-log-line{
+      white-space: nowrap;
+      display: flex;
+      gap: 6px;
+      align-items: flex-start;
+      margin-bottom: 2px;
+    }
+    .wf-log-time{
+      color: #64748b;
+      flex-shrink: 0;
+    }
+    .wf-log-text{
+      color: #e5e7eb;
+    }
+    .wf-log-tag{
+      color: #22c55e;
+    }
+
+    .is-loading{
+      animation: txtBreath 1.1s ease-in-out infinite;
+    }
+    @keyframes txtBreath{
+      0%,100%{ opacity: 1; }
+      50%{ opacity: .45; }
+    }
+
+    @media (max-width: 900px){
+      .writing-flow-panel{
+        height: auto;
+        grid-template-columns: minmax(0,1fr);
+        grid-template-rows: auto auto auto;
+      }
+      .wf-col-left{
+        grid-column: 1 / -1;
+        grid-row: 3 / 4;
+        border-right: none;
+        border-top: 1px dashed #e5e7eb;
+        padding-right: 0;
+        padding-top: 8px;
+        margin-top: 4px;
+      }
+      .wf-col-right{
+        grid-column: 1 / -1;
+        grid-row: 3 / 4;
+        grid-template-columns: minmax(0,1fr);
+        grid-template-rows: auto auto;
+        grid-template-areas:
+          "timeline"
+          "bottom";
+      }
+      .wf-bottom{
+        grid-template-columns: minmax(0,1fr);
+        grid-template-rows: auto auto;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="writing-flow-panel" id="wf-panel">
+  <div class="wf-header">
+    <div class="wf-header-left">
+      <div class="wf-title">完整文章写作流程 · 实时预览</div>
+      <div class="wf-tag">LangGraph Workflow</div>
+    </div>
+    <div class="wf-status-chip">
+      <span class="wf-dot"></span>
+      <span id="wf-header-status-text">初始化中…</span>
+    </div>
+  </div>
+
+  <div class="wf-progress-wrapper">
+    <div class="wf-progress-row">
+      <div class="wf-progress-label">
+        <strong id="wf-progress-main">整体进度</strong>
+        <span id="wf-progress-sub">· 章节 0 / 0</span>
+      </div>
+      <div id="wf-progress-percent">0%</div>
+    </div>
+    <div class="wf-progress-bar">
+      <div class="wf-progress-inner" id="wf-progress-inner"></div>
+    </div>
+  </div>
+
+  <div class="wf-col-left">
+    <div class="wf-section-list">
+      <div class="wf-section-list-title">
+        <span>章节写作进度</span>
+        <span id="wf-section-counter">0 / 0 完成</span>
+      </div>
+      <div class="wf-section-items" id="wf-section-items"></div>
+    </div>
+
+    <div class="wf-global-stages">
+      <div class="wf-global-title">全局阶段</div>
+      <div class="wf-global-chips" id="wf-global-chips"></div>
+    </div>
+  </div>
+
+  <div class="wf-col-right">
+    <div class="wf-timeline">
+      <div class="wf-timeline-header">
+        <div class="wf-timeline-header-left">
+          <div class="wf-timeline-label">当前章节内部流程</div>
+          <div class="wf-timeline-title" id="wf-current-l2">—</div>
+          <div class="wf-timeline-sub" id="wf-current-l1">—</div>
+        </div>
+        <div class="wf-timeline-meta">
+          <div class="wf-timeline-meta-pill">
+            章节 <span id="wf-current-index">0 / 0</span>
+          </div>
+          <div class="wf-timeline-meta-pill">
+            预估字数 <span id="wf-current-words">—</span>
+          </div>
+          <div class="wf-timeline-meta-pill main">
+            <span id="wf-current-stage-text">等待开始</span>
+          </div>
+        </div>
+      </div>
+      <div class="wf-step-list" id="wf-step-list"></div>
+    </div>
+
+    <div class="wf-bottom">
+      <div class="wf-detail" id="wf-detail">
+        <div class="wf-detail-header">
+          <div class="wf-detail-header-title">当前步骤关键指标 & 检索详情</div>
+          <div class="wf-detail-header-step" id="wf-detail-step-label">等待开始</div>
+        </div>
+        <div class="wf-detail-metrics" id="wf-detail-metrics"></div>
+        <div class="wf-detail-grids">
+          <div class="wf-detail-block">
+            <div class="wf-detail-block-title">
+              <span>检索语句</span>
+              <span class="wf-detail-block-sub">Queries</span>
+            </div>
+            <ul class="wf-detail-list" id="wf-detail-query-list"></ul>
+          </div>
+          <div class="wf-detail-block">
+            <div class="wf-detail-block-title">
+              <span>联网检索结果</span>
+              <span class="wf-detail-block-sub">Web Results</span>
+            </div>
+            <ul class="wf-detail-list" id="wf-detail-web-list"></ul>
+          </div>
+          <div class="wf-detail-block">
+            <div class="wf-detail-block-title">
+              <span>知识库文档</span>
+              <span class="wf-detail-block-sub">KB Documents</span>
+            </div>
+            <ul class="wf-detail-list" id="wf-detail-kb-list"></ul>
+          </div>
+          <div class="wf-detail-block">
+            <div class="wf-detail-block-title">
+              <span>模型决策说明</span>
+              <span class="wf-detail-block-sub">Reasoning</span>
+            </div>
+            <div class="wf-detail-reason" id="wf-detail-reason"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="wf-log">
+        <div class="wf-log-header">
+          <div class="wf-log-title">写作过程事件流</div>
+          <div class="wf-log-status" id="wf-log-status">streaming...</div>
+        </div>
+        <div class="wf-log-body" id="wf-log-body"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const sections = [
+    { id: "sec-1", l1: "一、技术背景", l2: "1.1 LangGraph 工作流概览", words: 900 },
+    { id: "sec-2", l1: "二、检索与筛选", l2: "2.1 临时知识库与并行检索", words: 1100 },
+    { id: "sec-3", l1: "三、写作实现", l2: "3.1 WritingAgent 提示与篇幅控制", words: 1000 }
+  ];
+
+  const globalStages = [
+    { key: "initialize", label: "阶段 0 · 初始化", desc: "initialize_node：创建临时知识库 & 历史管理器" },
+    { key: "planning", label: "阶段 1 · 规划大纲", desc: "planning_node：生成或接收大纲，提取章节列表" },
+    { key: "loop", label: "阶段 2 · 章节循环写作", desc: "prepare_section → collect_info → writing → save_section" },
+    { key: "complete", label: "阶段 3 · 完成清理", desc: "complete_node：清空临时知识库，任务完成" }
+  ];
+
+  const sectionSteps = [
+    { key: "prepare_section", label: "prepare_section · 准备章节", desc: "选择历史章节，生成初始检索查询，并检索临时KB+主KB/联网", badge: "选择历史 & 初次检索" },
+    { key: "collect_info", label: "collect_info · 收集信息", desc: "评估信息充足性，如有缺失则生成额外查询并筛选结果", badge: "信息充足性评估" },
+    { key: "writing", label: "writing · 撰写正文", desc: "汇总检索结果和历史内容，调用 WritingAgent 写出章节", badge: "LLM 写作" },
+    { key: "save_section", label: "save_section · 保存章节", desc: "写入 WritingHistoryManager，更新 all_written_sections & 索引", badge: "入库 & 进入下一节" }
+  ];
+
+  const detailTemplates = {
+    prepare_section: {
+      label: "prepare_section · 初次检索",
+      metrics: [
+        { label: "临时KB召回", value: "2 条" },
+        { label: "主知识库召回", value: "5 条" },
+        { label: "联网结果召回", value: "4 条" }
+      ],
+      queries: [
+        '"LangGraph 写作工作流" 结构设计',
+        "临时知识库 temp_kb 去重与入库策略",
+        "ResultFilterAgent 筛选规则 示例"
+      ],
+      webResults: [
+        { title: "LangGraph 官方文档：StateGraph 与 Node", source: "web" },
+        { title: "多阶段写作代理系统实践", source: "blog" }
+      ],
+      kbDocs: [
+        "内部知识库 · workflow 编排说明.md",
+        "技术方案 · temp_kb 设计与使用.pdf"
+      ],
+      reason:
+        "ResultFilterAgent 基于章节标题+查询语义匹配与信息多样性打分，保留约 60% 候选，避免重复与冗余。"
+    },
+    collect_info: {
+      label: "collect_info · 信息补充",
+      metrics: [
+        { label: "初始覆盖度", value: "≈ 65%" },
+        { label: "缺失关键点", value: "2 个" },
+        { label: "额外检索召回", value: "3 条" }
+      ],
+      queries: [
+        "章节 {section} 缺失：历史章节引用示例 + 评估逻辑",
+        "info_sufficiency_evaluation 设计与缺失点映射"
+      ],
+      webResults: [
+        { title: "两阶段检索与充足性评估实践", source: "paper" }
+      ],
+      kbDocs: [
+        "算法说明 · evaluate_info_sufficiency.md",
+        "检索策略 · 额外查询生成与去重.md"
+      ],
+      reason:
+        "首次评估信息不足，针对缺失点生成额外查询；第二轮覆盖度达标后进入写作，即便仍有未知，会在生成时标记假设。"
+    },
+    writing: {
+      label: "writing · 模型生成",
+      metrics: [
+        { label: "上下文片段数", value: "8 条" },
+        { label: "提示词 Token 数", value: "≈ 3.0k" },
+        { label: "目标字数", value: "约 900 字" }
+      ],
+      queries: [
+        "整合历史章节摘要 + 当前检索片段",
+        "篇幅与段落结构控制指令"
+      ],
+      webResults: [
+        { title: "长上下文写作：摘要+重点片段拼接", source: "note" }
+      ],
+      kbDocs: [
+        "提示模版 · 写作阶段 prompt.md",
+        "篇幅控制 · total_words / written_words.md"
+      ],
+      reason:
+        "写作阶段不再检索，使用已有 search_results 与历史摘要；系统提示要求风格一致、显式引用、控制篇幅。"
+    },
+    save_section: {
+      label: "save_section · 入库与索引更新",
+      metrics: [
+        { label: "新增历史章节", value: "1 条" },
+        { label: "历史章节总数", value: "递增中" },
+        { label: "索引位置", value: "current_section_index + 1" }
+      ],
+      queries: [
+        "向量化 level2 标题写入历史向量库",
+        "更新 all_written_sections / current_section_index"
+      ],
+      webResults: [
+        { title: "章节向量索引用于跨节引用", source: "article" }
+      ],
+      kbDocs: [
+        "WritingHistoryManager 接口说明.md"
+      ],
+      reason:
+        "仅状态写入与向量库更新，不调用 LLM；为后续 select_history_sections 提供语义检索能力。"
+    }
+  };
+
+  const sectionItemsContainer = document.getElementById("wf-section-items");
+  const globalChipsContainer = document.getElementById("wf-global-chips");
+  const stepListContainer = document.getElementById("wf-step-list");
+  const headerStatusText = document.getElementById("wf-header-status-text");
+  const progressInner = document.getElementById("wf-progress-inner");
+  const progressPercentText = document.getElementById("wf-progress-percent");
+  const progressSub = document.getElementById("wf-progress-sub");
+  const sectionCounter = document.getElementById("wf-section-counter");
+  const logBody = document.getElementById("wf-log-body");
+  const logStatus = document.getElementById("wf-log-status");
+  const progressMainLabel = document.getElementById("wf-progress-main");
+
+  const detailStepLabel = document.getElementById("wf-detail-step-label");
+  const detailMetrics = document.getElementById("wf-detail-metrics");
+  const detailQueryList = document.getElementById("wf-detail-query-list");
+  const detailWebList = document.getElementById("wf-detail-web-list");
+  const detailKbList = document.getElementById("wf-detail-kb-list");
+  const detailReason = document.getElementById("wf-detail-reason");
+
+  const currentL2 = document.getElementById("wf-current-l2");
+  const currentL1 = document.getElementById("wf-current-l1");
+  const currentIndexEl = document.getElementById("wf-current-index");
+  const currentWords = document.getElementById("wf-current-words");
+  const currentStageText = document.getElementById("wf-current-stage-text");
+
+  function initSectionsUI(){
+    sections.forEach((s, idx) => {
+      const item = document.createElement("div");
+      item.className = "wf-section-item";
+      item.dataset.state = "pending";
+
+      const badge = document.createElement("div");
+      badge.className = "wf-section-index-badge";
+      badge.textContent = idx + 1;
+
+      const labels = document.createElement("div");
+      labels.className = "wf-section-item-labels";
+
+      const l2 = document.createElement("div");
+      l2.className = "wf-section-l2";
+      l2.textContent = s.l2;
+
+      const l1 = document.createElement("div");
+      l1.className = "wf-section-l1";
+      l1.textContent = s.l1;
+
+      labels.appendChild(l2);
+      labels.appendChild(l1);
+
+      const status = document.createElement("div");
+      status.className = "wf-section-status";
+      status.textContent = "等待写作";
+
+      item.appendChild(badge);
+      item.appendChild(labels);
+      item.appendChild(status);
+
+      sectionItemsContainer.appendChild(item);
+    });
+
+    sectionCounter.textContent = `0 / ${sections.length} 完成`;
+    progressSub.textContent = `· 章节 0 / ${sections.length}`;
+  }
+
+  function initGlobalStagesUI(){
+    globalStages.forEach((stage) => {
+      const chip = document.createElement("div");
+      chip.className = "wf-stage-chip";
+      chip.dataset.key = stage.key;
+      chip.dataset.state = "pending";
+      chip.title = stage.desc;
+      chip.textContent = stage.label;
+      globalChipsContainer.appendChild(chip);
+    });
+  }
+
+  function initStepsUI(){
+    sectionSteps.forEach(step => {
+      const item = document.createElement("div");
+      item.className = "wf-step-item";
+      item.dataset.key = step.key;
+      item.dataset.state = "pending";
+
+      const title = document.createElement("div");
+      title.className = "wf-step-title";
+      title.textContent = step.label;
+
+      const desc = document.createElement("div");
+      desc.className = "wf-step-desc";
+      desc.textContent = step.desc;
+
+      const badge = document.createElement("div");
+      badge.className = "wf-step-badge";
+      badge.textContent = step.badge;
+
+      item.appendChild(title);
+      item.appendChild(desc);
+      item.appendChild(badge);
+      stepListContainer.appendChild(item);
+    });
+  }
+
+  initSectionsUI();
+  initGlobalStagesUI();
+  initStepsUI();
+
+  function appendLog(text, tag){
+    const line = document.createElement("div");
+    line.className = "wf-log-line";
+
+    const time = document.createElement("div");
+    time.className = "wf-log-time";
+    const now = new Date();
+    time.textContent = now.toLocaleTimeString("zh-CN", {
+      hour12: false,
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit"
+    });
+
+    const txt = document.createElement("div");
+    txt.className = "wf-log-text";
+    if(tag){
+      const spanTag = document.createElement("span");
+      spanTag.className = "wf-log-tag";
+      spanTag.textContent = `[${tag}] `;
+      txt.appendChild(spanTag);
+    }
+    txt.appendChild(document.createTextNode(text));
+
+    line.appendChild(time);
+    line.appendChild(txt);
+    logBody.appendChild(line);
+    logBody.scrollTop = logBody.scrollHeight;
+  }
+
+  function updateDetailPanel(sectionIndex, stepKey){
+    const tpl = detailTemplates[stepKey];
+    if(!tpl){
+      detailStepLabel.textContent = "当前步骤暂无详细指标";
+      detailMetrics.innerHTML = "";
+      detailQueryList.innerHTML = "";
+      detailWebList.innerHTML = "";
+      detailKbList.innerHTML = "";
+      detailReason.textContent = "";
+      return;
+    }
+
+    const sec = sections[sectionIndex] || {};
+    detailStepLabel.textContent = tpl.label;
+
+    detailMetrics.innerHTML = "";
+    tpl.metrics.forEach(m => {
+      const pill = document.createElement("div");
+      pill.className = "wf-detail-metric";
+      const labelSpan = document.createElement("span");
+      labelSpan.className = "wf-detail-metric-label";
+      labelSpan.textContent = m.label;
+      const valueSpan = document.createElement("span");
+      valueSpan.className = "wf-detail-metric-value";
+      valueSpan.textContent = m.value;
+      pill.appendChild(labelSpan);
+      pill.appendChild(valueSpan);
+      detailMetrics.appendChild(pill);
+    });
+
+    detailQueryList.innerHTML = "";
+    tpl.queries.forEach(q => {
+      const li = document.createElement("li");
+      const span = document.createElement("span");
+      span.className = "wf-detail-query-pill";
+      span.textContent = q.replace("{section}", sec.l2 || "");
+      li.appendChild(span);
+      detailQueryList.appendChild(li);
+    });
+
+    detailWebList.innerHTML = "";
+    tpl.webResults.forEach(r => {
+      const li = document.createElement("li");
+      li.textContent = r.title;
+      const tag = document.createElement("span");
+      tag.className = "wf-detail-tag";
+      tag.textContent = r.source;
+      li.appendChild(tag);
+      detailWebList.appendChild(li);
+    });
+
+    detailKbList.innerHTML = "";
+    tpl.kbDocs.forEach(name => {
+      const li = document.createElement("li");
+      li.textContent = name;
+      const tag = document.createElement("span");
+      tag.className = "wf-detail-tag";
+      tag.textContent = "KB";
+      li.appendChild(tag);
+      detailKbList.appendChild(li);
+    });
+
+    detailReason.textContent = tpl.reason.replace("{section}", sec.l2 || "");
+  }
+
+  const totalStepsCount = 2 + sections.length * sectionSteps.length + 1;
+  let doneStepsCount = 0;
+  let currentGlobalStage = "initialize";
+  let currentSectionIndex = -1;
+  let currentSectionStepIndex = -1;
+  let finishedSections = 0;
+  let timerId = null;
+  let isReviewMode = false;
+
+  const stepInterval = 2200;
+
+  function setGlobalStage(key){
+    currentGlobalStage = key;
+    const chips = globalChipsContainer.querySelectorAll(".wf-stage-chip");
+    chips.forEach(chip => {
+      const chipKey = chip.dataset.key;
+      if(chipKey === key){
+        chip.dataset.state = "active";
+      }else if(chipKey === "initialize" && key !== "initialize"){
+        chip.dataset.state = "done";
+      }else if(chipKey === "planning" && (key === "loop" || key === "complete")){
+        chip.dataset.state = "done";
+      }else if(chipKey === "loop" && key === "complete"){
+        chip.dataset.state = "done";
+      }else if(chip.dataset.state !== "done"){
+        chip.dataset.state = "pending";
+      }
+    });
+
+    switch(key){
+      case "initialize":
+        headerStatusText.textContent = "初始化组件中…";
+        progressMainLabel.textContent = "整体进度";
+        break;
+      case "planning":
+        headerStatusText.textContent = "规划大纲 & 生成章节…";
+        break;
+      case "loop":
+        headerStatusText.textContent = "章节循环写作中…";
+        break;
+      case "complete":
+        headerStatusText.textContent = "全部章节完成 ✔";
+        progressMainLabel.textContent = "任务已完成";
+        break;
+    }
+  }
+
+  function setCurrentSection(idx){
+    currentSectionIndex = idx;
+    currentSectionStepIndex = -1;
+
+    const items = sectionItemsContainer.querySelectorAll(".wf-section-item");
+    items.forEach((el, i) => {
+      if(i < idx){
+        el.dataset.state = "done";
+        el.querySelector(".wf-section-status").textContent = "已完成";
+      }else if(i === idx){
+        el.dataset.state = "active";
+        el.querySelector(".wf-section-status").textContent = "写作中…";
+      }else{
+        el.dataset.state = "pending";
+        el.querySelector(".wf-section-status").textContent = "等待写作";
+      }
+    });
+
+    const sec = sections[idx];
+    currentL2.textContent = sec.l2;
+    currentL1.textContent = sec.l1;
+    currentIndexEl.textContent = `${idx+1} / ${sections.length}`;
+    currentWords.textContent = `${sec.words} 字（预估）`;
+    currentStageText.textContent = "准备章节中…";
+
+    updateDetailPanel(idx, "prepare_section");
+  }
+
+  function setCurrentSectionStep(stepIdx){
+    currentSectionStepIndex = stepIdx;
+    const stepItems = stepListContainer.querySelectorAll(".wf-step-item");
+    stepItems.forEach((el, i) => {
+      if(i < stepIdx){
+        el.dataset.state = "done";
+      }else if(i === stepIdx){
+        el.dataset.state = "active";
+      }else{
+        el.dataset.state = "pending";
+      }
+    });
+
+    const step = sectionSteps[stepIdx];
+    if(step){
+      let label = "";
+      switch(step.key){
+        case "prepare_section":
+          label = "准备章节：选择历史章节 & 初次检索";
+          break;
+        case "collect_info":
+          label = "收集信息：评估信息是否充足";
+          break;
+        case "writing":
+          label = "撰写正文：调用 LLM 生成章节内容";
+          break;
+        case "save_section":
+          label = "保存章节：写入历史管理器";
+          break;
+      }
+      currentStageText.textContent = label;
+
+      if(currentSectionIndex >= 0){
+        updateDetailPanel(currentSectionIndex, step.key);
+      }
+    }
+  }
+
+  function updateProgress(){
+    doneStepsCount = Math.min(doneStepsCount + 1, totalStepsCount);
+    const percent = Math.round(doneStepsCount / totalStepsCount * 100);
+    progressInner.style.width = percent + "%";
+    progressPercentText.textContent = percent + "%";
+    progressSub.textContent = `· 章节 ${finishedSections} / ${sections.length}`;
+    sectionCounter.textContent = `${finishedSections} / ${sections.length} 完成`;
+  }
+
+  function nextStep(){
+    if(currentGlobalStage === "initialize"){
+      setGlobalStage("initialize");
+      appendLog("TemporaryKnowledgeBase / WritingHistoryManager / ToolOrchestrator / WritingAgent 已初始化。", "initialize");
+      updateProgress();
+      setGlobalStage("planning");
+      return;
+    }
+
+    if(currentGlobalStage === "planning"){
+      appendLog("PlanningAgent 检查前端是否提供大纲，如无则生成；提取所有二级标题章节。", "planning");
+      updateProgress();
+      setGlobalStage("loop");
+      setCurrentSection(0);
+      appendLog(`开始章节 #1：${sections[0].l2}`, "section");
+      return;
+    }
+
+    if(currentGlobalStage === "loop"){
+      if(currentSectionIndex === -1){
+        setCurrentSection(0);
+      }
+
+      if(currentSectionStepIndex === -1){
+        setCurrentSectionStep(0);
+        appendLog(`prepare_section：选择最多 3 个相关历史章节，生成初始检索查询，并在临时KB/主KB/网络中获取结果。`, "prepare_section");
+        updateProgress();
+        return;
+      }
+
+      if(currentSectionStepIndex >= 0 && currentSectionStepIndex < sectionSteps.length - 1){
+        const nextIdx = currentSectionStepIndex + 1;
+        setCurrentSectionStep(nextIdx);
+
+        if(sectionSteps[nextIdx].key === "collect_info"){
+          appendLog(`collect_info：评估信息是否充足，若不足则基于缺失点生成额外检索查询并筛选结果。`, "collect_info");
+        }else if(sectionSteps[nextIdx].key === "writing"){
+          appendLog(`writing：汇总检索结果与历史章节，控制篇幅信息后调用 WritingAgent.write_section() 生成 Markdown 正文。`, "writing");
+        }else if(sectionSteps[nextIdx].key === "save_section"){
+          appendLog(`save_section：将章节写入 WritingHistoryManager，并更新 all_written_sections 与 current_section_index。`, "save_section");
+        }
+        updateProgress();
+        return;
+      }
+
+      if(currentSectionStepIndex === sectionSteps.length - 1){
+        finishedSections += 1;
+        appendLog(`章节 #${currentSectionIndex + 1} 已完成写作并入库。`, "section-done");
+        updateProgress();
+
+        if(currentSectionIndex < sections.length - 1){
+          const nextSectionIndex = currentSectionIndex + 1;
+          setCurrentSection(nextSectionIndex);
+          setCurrentSectionStep(0);
+          appendLog(`开始章节 #${nextSectionIndex + 1}：${sections[nextSectionIndex].l2}`, "section");
+        }else{
+          setGlobalStage("complete");
+          currentGlobalStage = "complete";
+        }
+        return;
+      }
+    }
+
+    if(currentGlobalStage === "complete"){
+      appendLog(`complete_node：清空临时知识库（FAISS 索引 & 存储目录），设置 is_complete = True，写作流程结束。`, "complete");
+      updateProgress();
+      logStatus.textContent = "done";
+      isReviewMode = true;
+      clearInterval(timerId);
+      return;
+    }
+  }
+
+  function startSimulation(){
+    setGlobalStage("initialize");
+    logStatus.textContent = "streaming...";
+    doneStepsCount = 0;
+    currentGlobalStage = "initialize";
+    currentSectionIndex = -1;
+    currentSectionStepIndex = -1;
+    finishedSections = 0;
+    isReviewMode = false;
+    progressInner.style.width = "0%";
+    progressPercentText.textContent = "0%";
+    progressSub.textContent = `· 章节 0 / ${sections.length}`;
+    sectionCounter.textContent = `0 / ${sections.length} 完成`;
+    logBody.innerHTML = "";
+    detailStepLabel.textContent = "等待开始";
+    detailMetrics.innerHTML = "";
+    detailQueryList.innerHTML = "";
+    detailWebList.innerHTML = "";
+    detailKbList.innerHTML = "";
+    detailReason.textContent = "";
+    currentL1.textContent = "—";
+    currentL2.textContent = "—";
+    currentIndexEl.textContent = "0 / 0";
+    currentWords.textContent = "—";
+    currentStageText.textContent = "等待开始";
+
+    appendLog("开始新一轮完整文章写作流程模拟。", "start");
+
+    let stepsRun = 0;
+    timerId = setInterval(() => {
+      stepsRun++;
+      headerStatusText.classList.add("is-loading");
+      setTimeout(() => headerStatusText.classList.remove("is-loading"), stepInterval * 0.8);
+
+      nextStep();
+      if(stepsRun > totalStepsCount + 8){
+        clearInterval(timerId);
+      }
+    }, stepInterval);
+  }
+
+  startSimulation();
+
+  document.getElementById("wf-panel").addEventListener("dblclick", function(){
+    startSimulation();
+  });
+})();
+</script>
+</body>
+</html>
+

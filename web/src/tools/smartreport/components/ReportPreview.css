@@ -1,0 +1,300 @@
+/* Modal 基础样式 */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: var(--spacing-lg);
+}
+
+.modal {
+  background-color: var(--color-bg-primary);
+  border-radius: var(--border-radius-lg);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  width: 100%;
+  max-width: 600px;
+}
+
+.modal-xl {
+  max-width: 1200px;
+}
+
+.report-preview-modal {
+  display: flex;
+  flex-direction: column;
+  max-height: 90vh;
+  width: 75% !important;
+  max-width: 75% !important;
+}
+
+/* Header 样式 */
+.report-preview-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-bottom: 1px solid var(--color-border-secondary);
+  background-color: var(--color-bg-primary);
+  flex-shrink: 0;
+}
+
+.report-preview-title {
+  margin: 0;
+  font-size: var(--font-size-xl);
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.report-preview-header-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+/* 下拉菜单容器 */
+.report-preview-dropdown {
+  position: relative;
+  z-index: 1000;
+}
+
+/* 下载按钮 */
+.report-preview-download-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: var(--spacing-xs);
+  background-color: transparent;
+  color: var(--color-text-secondary);
+  border: none;
+  border-radius: var(--border-radius-md);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  z-index: 1002;
+}
+
+.report-preview-download-btn:hover {
+  background-color: var(--color-bg-secondary);
+  color: var(--color-text-primary);
+}
+
+.report-preview-download-btn svg {
+  flex-shrink: 0;
+}
+
+/* 下拉菜单 */
+.report-preview-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 2px);
+  right: 0;
+  background-color: var(--color-bg-primary);
+  border: 1px solid var(--color-border-secondary);
+  border-radius: var(--border-radius-md);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  min-width: 120px;
+  z-index: 1001;
+  animation: dropdown-appear 0.15s ease-out;
+}
+
+@keyframes dropdown-appear {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.report-preview-dropdown-item {
+  display: block;
+  width: 100%;
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: none;
+  border: none;
+  text-align: left;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.report-preview-dropdown-item:hover {
+  background-color: var(--color-bg-secondary);
+}
+
+/* 关闭按钮 */
+.report-preview-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  margin-bottom: 2px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  border-radius: var(--border-radius-sm);
+  transition: all 0.2s;
+}
+
+.report-preview-close:hover {
+  background-color: var(--color-bg-secondary);
+  color: var(--color-text-primary);
+}
+
+.report-preview-content {
+  padding: var(--spacing-lg) var(--spacing-3xl);
+  line-height: 1.8;
+  overflow-y: auto;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+  flex: 1;
+  max-width: 900px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.report-preview-content::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+.report-preview-content h1,
+.report-preview-content h2,
+.report-preview-content h3,
+.report-preview-content h4 {
+  margin-top: var(--spacing-xl);
+  margin-bottom: var(--spacing-md);
+  color: var(--color-text-primary);
+}
+
+.report-preview-content h1 {
+  font-size: var(--font-size-3xl);
+  border-bottom: 2px solid var(--color-border-primary);
+  padding-bottom: var(--spacing-sm);
+}
+
+.report-preview-content h2 {
+  font-size: var(--font-size-2xl);
+}
+
+.report-preview-content h3 {
+  font-size: var(--font-size-xl);
+}
+
+.report-preview-content p {
+  margin-bottom: var(--spacing-md);
+  color: var(--color-text-secondary);
+}
+
+.report-preview-content ul,
+.report-preview-content ol {
+  margin-bottom: var(--spacing-md);
+  padding-left: var(--spacing-xl);
+}
+
+.report-preview-content li {
+  margin-bottom: var(--spacing-xs);
+  color: var(--color-text-secondary);
+}
+
+/* 图表样式 */
+.report-preview-content img {
+  width: 70%;
+  height: auto;
+  display: block;
+  margin: var(--spacing-md) auto;
+  border-radius: var(--border-radius-md);
+}
+
+/* 表格样式 */
+.report-preview-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: var(--spacing-md) 0;
+}
+
+.report-preview-content th,
+.report-preview-content td {
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: 1px solid var(--color-border-secondary);
+  text-align: center;
+}
+
+.report-preview-content th {
+  background-color: var(--color-bg-secondary);
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.report-preview-content td {
+  color: var(--color-text-secondary);
+}
+
+/* 参考文献分割线 */
+.report-preview-content hr {
+  margin: var(--spacing-xl) 0;
+  border: none;
+  border-top: 2px solid var(--color-border-secondary);
+}
+
+/* 参考文献标题 */
+.report-preview-content h2:has(+ p:first-of-type:contains("[")) {
+  margin-top: var(--spacing-xl);
+  padding-top: var(--spacing-md);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-2xl);
+}
+
+/* 参考文献列表样式 - 网络资源（带链接） */
+.report-preview-content p:has(> a[href^="http"]) {
+  margin-bottom: var(--spacing-sm);
+  padding-left: var(--spacing-md);
+  text-indent: -var(--spacing-md);
+  font-size: inherit;
+  line-height: 1.8;
+  color: var(--color-text-secondary);
+}
+
+/* 参考文献列表样式 - 知识库文档（不带链接，以 [数字] 开头） */
+.report-preview-content h2:contains("参考文献") ~ p {
+  margin-bottom: var(--spacing-sm);
+  padding-left: var(--spacing-md);
+  text-indent: -var(--spacing-md);
+  font-size: inherit;
+  line-height: 1.8;
+  color: var(--color-text-secondary);
+}
+
+/* 参考文献编号样式 */
+.report-preview-content p:has(> a[href^="http"])::first-line {
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+/* 参考文献链接样式 */
+.report-preview-content p > a[href^="http"] {
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.report-preview-content p > a[href^="http"]:hover {
+  color: var(--color-primary);
+  text-decoration: underline;
+}
+

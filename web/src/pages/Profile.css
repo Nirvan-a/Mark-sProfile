@@ -1,0 +1,371 @@
+/* 主页专用样式 - 导入 Tailwind CSS 和新主题 */
+/* 注意：这些样式只应用于主页，不影响工具页面 */
+
+@import '../styles/tailwind.css';
+@import '../styles/theme.css';
+
+/* 重置全局样式对主页的影响 */
+body:has(.profile-page-wrapper) {
+  /* 重置全局 body 样式，让 Tailwind 的样式生效 */
+  background: #f9fafb !important; /* bg-gray-50 */
+  color: inherit !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  height: auto !important;
+  overflow: auto !important;
+  position: static !important;
+  background-image: none !important;
+  background-size: initial !important;
+  background-position: initial !important;
+  background-repeat: initial !important;
+  background-attachment: initial !important;
+}
+
+html:has(.profile-page-wrapper) {
+  height: auto !important;
+  overflow: auto !important;
+  position: static !important;
+}
+
+/* 确保主页容器全宽度和高度 */
+.profile-page-wrapper {
+  width: 100%;
+  height: 100vh;
+  overflow-x: hidden;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  /* 微妙的渐变背景 - 从左上到右下的极浅渐变 */
+  background: linear-gradient(135deg, #fafbfc 0%, #f8fafc 50%, #f1f5f9 100%);
+  position: relative;
+}
+
+/* 添加微妙的背景装饰点（可选，增加视觉层次） */
+.profile-page-wrapper::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    radial-gradient(circle at 20% 30%, rgba(37, 99, 235, 0.03) 0%, transparent 50%),
+    radial-gradient(circle at 80% 70%, rgba(139, 92, 246, 0.03) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.profile-page-wrapper > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* 平滑滚动 */
+.profile-page-wrapper html {
+  scroll-behavior: smooth;
+}
+
+/* 确保所有 section 都有适当的间距 */
+.profile-page-wrapper section {
+  position: relative;
+}
+
+/* Projects Banner Wrapper */
+.projects-banner-wrapper {
+  position: relative;
+  width: 90%; /* 占据屏幕总宽度的90% */
+  max-width: 1400px; /* 设置一个合理的最大宽度上限 */
+  margin: 0 auto;
+}
+
+/* Viewport - 固定宽度容器 */
+.projects-banner-viewport {
+  position: relative;
+  width: 100%;
+  height: 260px; /* 固定高度 */
+  overflow: hidden;
+  border-radius: 1.25rem;
+}
+
+/* 左右渐隐遮罩 */
+.projects-banner-viewport::before,
+.projects-banner-viewport::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 100px;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.projects-banner-viewport::before {
+  left: 0;
+  background: linear-gradient(
+    to right,
+    rgba(249, 250, 251, 0.95) 0%,
+    rgba(249, 250, 251, 0.6) 40%,
+    transparent 100%
+  );
+}
+
+.projects-banner-viewport::after {
+  right: 0;
+  background: linear-gradient(
+    to left,
+    rgba(249, 250, 251, 0.95) 0%,
+    rgba(249, 250, 251, 0.6) 40%,
+    transparent 100%
+  );
+}
+
+/* Track - 可移动的轨道，包含所有卡片（包括克隆的） */
+.projects-banner-track {
+  display: flex;
+  gap: 1.5rem;
+  height: 100%;
+  will-change: transform;
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 导航按钮 - 悬浮在边缘显示 */
+.projects-banner-nav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: white;
+  border: 1px solid rgba(229, 231, 235, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #4b5563;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 10;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.projects-banner-wrapper:hover .projects-banner-nav-btn {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.projects-banner-nav-left {
+  left: 0.5rem;
+}
+
+.projects-banner-nav-right {
+  right: 0.5rem;
+}
+
+.projects-banner-nav-btn:hover {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-color: transparent;
+  transform: translateY(-50%) scale(1.1);
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4), 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.projects-banner-nav-btn:active {
+  transform: translateY(-50%) scale(0.95);
+}
+
+.projects-banner-nav-btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.5), 0 0 0 4px rgba(102, 126, 234, 0.1);
+}
+
+.project-banner-card {
+  flex-shrink: 0;
+  /* width 将由 JavaScript 动态设置 */
+  height: 260px; /* 进一步增加高度，让图片显示更完整 */
+  background: white;
+  border-radius: 1.25rem;
+  border: 1px solid #e5e7eb;
+  overflow: hidden; /* 确保圆角可见 */
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.08), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  position: relative;
+}
+
+
+.project-banner-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 1.25rem;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.1), rgba(139, 92, 246, 0.1));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.project-banner-card:hover {
+  transform: translateY(-6px) scale(1.02);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12), 0 8px 16px rgba(0, 0, 0, 0.08);
+  border-color: #cbd5e1;
+}
+
+.project-banner-card:hover::before {
+  opacity: 1;
+}
+
+.project-banner-image {
+  height: 180px; /* 继续增加高度，让图片显示更完整 */
+  background-size: cover; /* 等比例缩放，覆盖整个区域 */
+  background-position: top center; /* 贴紧顶部居中显示 */
+  background-repeat: no-repeat;
+  position: relative;
+  border-radius: 1.25rem 1.25rem 0 0; /* 顶部圆角，与卡片圆角一致 */
+  overflow: hidden; /* 确保圆角可见 */
+}
+
+.project-banner-icon::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.1) 100%);
+}
+
+.project-banner-icon span {
+  font-size: 2.5rem;
+}
+
+.project-banner-content {
+  padding: 0.75rem 1rem; /* 压缩padding节省空间 */
+  position: absolute;
+  top: 180px; /* 从新的图片区域底部开始 */
+  bottom: 0; /* 到底部 */
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* 防止内容溢出 */
+}
+
+.project-banner-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #111827;
+  margin: 0 0 0.125rem 0; /* 减少间距，让标题和描述文字更近 */
+}
+
+.project-banner-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.125rem 0.5rem;
+  border-radius: 0.75rem;
+  font-size: 0.625rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.project-banner-description {
+  font-size: 0.8125rem;
+  color: #6b7280;
+  line-height: 1.4;
+  margin: 0;
+  overflow: hidden; /* 防止描述文字溢出 */
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* 允许显示2行，高度稍微高一些 */
+  line-clamp: 2; /* 标准属性，用于兼容性 */
+  -webkit-box-orient: vertical;
+}
+
+/* 文字区域背景 - 让文字在图片上更清晰 */
+.project-banner-content::before {
+  content: '';
+  position: absolute;
+  top: 0; /* 从文字区域顶部开始 */
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.95) 0%, /* 直接从纯色开始 */
+    rgba(255, 255, 255, 0.95) 100% /* 纯色到底部 */
+  );
+  border-radius: 0 0 1.25rem 1.25rem;
+  pointer-events: none;
+  z-index: -1;
+}
+
+
+/* 响应式优化 */
+@media (max-width: 640px) {
+  .projects-banner-wrapper {
+    max-width: 100%; /* 移动端占满宽度 */
+  }
+
+  .projects-banner-viewport {
+    height: 260px; /* 移动端也增加高度 */
+  }
+
+  .project-banner-card {
+    height: 240px; /* 移动端增加高度 */
+  }
+
+  .project-banner-image {
+    height: 150px; /* 移动端继续增加图片区域高度 */
+  }
+
+  .project-banner-content {
+    padding: 0.625rem 0.875rem; /* 移动端也压缩padding */
+    top: 150px; /* 调整文字区域位置 */
+  }
+
+  .project-banner-title {
+    font-size: 1rem;
+  }
+
+  .project-banner-description {
+    font-size: 0.75rem;
+    -webkit-line-clamp: 2; /* 移动端也允许2行 */
+    line-clamp: 2; /* 标准属性，用于兼容性 */
+  }
+
+  .projects-banner-track {
+    gap: 1rem; /* 移动端间距更小 */
+  }
+
+  .projects-banner-viewport::before,
+  .projects-banner-viewport::after {
+    width: 60px; /* 移动端渐隐范围更小 */
+  }
+
+  .projects-banner-nav-btn {
+    width: 36px;
+    height: 36px;
+  }
+
+  .projects-banner-nav-btn svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .projects-banner-nav-left {
+    left: 0.25rem;
+  }
+
+  .projects-banner-nav-right {
+    right: 0.25rem;
+  }
+}

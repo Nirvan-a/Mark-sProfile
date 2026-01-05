@@ -1,0 +1,4 @@
+/* 导入统一主题系统（用于工具页面） */
+@import './shared/styles/theme.css';
+@import './shared/styles/components.css';
+@import './shared/styles/chat.css';

@@ -1,0 +1,72 @@
+.editable-markdown {
+  border: 1px solid var(--color-border-primary);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--color-bg-primary);
+}
+
+.editable-markdown-toolbar {
+  display: flex;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-sm);
+  background: var(--color-bg-secondary);
+  border-bottom: 1px solid var(--color-border-primary);
+}
+
+.editable-markdown-btn {
+  padding: var(--spacing-xs) var(--spacing-md);
+  border: 1px solid var(--color-border-primary);
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-primary);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.editable-markdown-btn:hover {
+  background: var(--color-bg-tertiary);
+  color: var(--color-text-primary);
+}
+
+.editable-markdown-btn.active {
+  background: var(--color-primary);
+  color: var(--color-text-inverse);
+  border-color: var(--color-primary);
+}
+
+.editable-markdown-content {
+  min-height: 300px;
+  max-height: 600px;
+  overflow: auto;
+}
+
+.editable-markdown-textarea {
+  width: 100%;
+  min-height: 300px;
+  padding: var(--spacing-lg);
+  border: none;
+  outline: none;
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-sm);
+  line-height: 1.6;
+  resize: vertical;
+  color: var(--color-text-primary);
+  background: var(--color-bg-primary);
+}
+
+.editable-markdown-preview {
+  padding: var(--spacing-lg);
+  min-height: 300px;
+}
+
+.editable-markdown.disabled {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.editable-markdown.disabled .editable-markdown-preview {
+  background: var(--color-bg-tertiary);
+  border-left: 3px solid var(--color-success);
+}
+

@@ -1,0 +1,25 @@
+{
+  "name": "profile-page",
+  "version": "1.0.0",
+  "description": "个人主页 - 个人工具集",
+  "type": "module",
+  "scripts": {
+    "dev": "node dev-tools.js start",
+    "dev:server": "cd server && python -m uvicorn app:app --reload --host 0.0.0.0 --port 8001",
+    "stop": "node dev-tools.js stop",
+    "list": "node dev-tools.js list",
+    "build": "cd web && npm run build",
+    "lint": "cd web && npm run lint",
+    "install:all": "npm install && cd web && npm install && cd ../server && pip install -r requirements.txt",
+    "clean": "rm -rf web/dist* web/node_modules/.vite"
+  },
+  "keywords": [
+    "profile",
+    "tools",
+    "react",
+    "fastapi",
+    "personal"
+  ],
+  "author": "",
+  "license": "MIT"
+}

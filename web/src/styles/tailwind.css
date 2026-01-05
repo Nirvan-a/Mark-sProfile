@@ -1,0 +1,6 @@
+/* Tailwind CSS v4 配置 - 使用新的 @import 和 @source 语法 */
+/* 注意：IDE 可能会显示语法错误，但这是 Tailwind CSS v4 的正确语法 */
+@import 'tailwindcss' source(none);
+@source '../**/*.{js,ts,jsx,tsx}';
+
+@import 'tw-animate-css';

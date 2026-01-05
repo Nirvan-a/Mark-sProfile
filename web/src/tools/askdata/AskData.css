@@ -1,0 +1,873 @@
+/* 智能问数工具专用样式 */
+/* 通用聊天界面样式已移至 shared/styles/chat.css */
+
+/* ===== 全局布局样式 ===== */
+
+#root {
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+}
+
+html {
+  height: 100%;
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+}
+
+body {
+  margin: 0;
+  height: 100vh;
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+  /* 使用与主页一致的浅灰色背景 */
+  background: linear-gradient(135deg, #fafbfc 0%, #f8fafc 50%, #f1f5f9 100%);
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (hover: none) and (pointer: coarse) {
+  html,
+  body {
+    height: 100svh;
+    min-height: 100svh;
+    position: fixed;
+    width: 100%;
+    overflow: hidden;
+  }
+
+  body {
+    background-attachment: scroll;
+    overscroll-behavior-y: none;
+    touch-action: none;
+    background: linear-gradient(135deg, #fafbfc 0%, #f8fafc 50%, #f1f5f9 100%);
+  }
+
+  #root,
+  .qa-app {
+    height: 100%;
+    min-height: 100svh;
+    overflow: hidden;
+  }
+
+  .qa-chat {
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    touch-action: pan-y;
+  }
+
+  .qa-chat::after {
+    content: '';
+    display: block;
+    min-height: env(safe-area-inset-bottom, 0px);
+  }
+}
+
+/* ===== 音乐播放器样式 ===== */
+
+.music-floating {
+  position: fixed;
+  top: 26px;
+  right: var(--spacing-xl);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  background: var(--color-bg-primary);
+  border-radius: var(--radius-full);
+  padding: var(--spacing-sm) 14px;
+  /* 使用与主页一致的阴影 */
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.08), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  border: 1px solid var(--color-border-primary);
+  z-index: var(--z-sticky);
+}
+
+.music-inline-label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+}
+
+.music-control {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  color: var(--color-text-primary);
+  z-index: 2;
+}
+
+.music-hover-wrapper::after {
+  content: '';
+  position: absolute;
+  top: -8px;
+  bottom: -140px;
+  left: -150px;
+  right: -30px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.music-hover-wrapper.menu-open::after {
+  pointer-events: auto;
+}
+
+.music-icon-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.music-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid var(--color-border-primary);
+  background: var(--color-bg-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform var(--transition-fast);
+  padding: 0;
+}
+
+.music-icon img {
+  width: 25px;
+  height: 25px;
+  display: block;
+  transform-origin: 50% 50%;
+  animation: slow-spin 12s linear infinite;
+  animation-play-state: paused;
+}
+
+.music-icon.playing img {
+  animation-play-state: running;
+}
+
+.music-icon:hover {
+  transform: translateY(-2px);
+}
+
+.music-dropdown {
+  position: absolute;
+  top: calc(100% + var(--spacing-md));
+  right: 0;
+  background: var(--color-bg-primary);
+  border: 1px solid var(--color-border-primary);
+  border-radius: var(--radius-lg);
+  padding: 10px var(--spacing-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--transition-fast), transform var(--transition-fast);
+  min-width: 160px;
+  z-index: var(--z-dropdown);
+  /* 使用与主页一致的阴影 */
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.08), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  transform: translateY(-8px);
+}
+
+.music-dropdown.visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.music-track-btn {
+  border: none;
+  background: transparent;
+  color: var(--color-text-secondary);
+  text-align: left;
+  font-size: var(--font-size-sm);
+  padding: var(--spacing-sm) var(--spacing-sm);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.music-track-btn:hover {
+  background: var(--color-bg-tertiary);
+}
+
+.music-track-btn.active {
+  background: var(--color-primary-bg);
+  color: var(--color-primary);
+}
+
+/* ===== 提示词编辑器样式 ===== */
+
+.prompt-editor-trigger {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: opacity var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: var(--spacing-xs);
+}
+
+.prompt-editor-trigger img {
+  width: 20px;
+  height: 20px;
+  display: block;
+}
+
+.prompt-editor-trigger:hover {
+  opacity: 0.7;
+}
+
+.qa-label {
+  margin: 0;
+  font-size: var(--font-size-base);
+  letter-spacing: 0.08em;
+  color: var(--color-text-tertiary);
+  text-transform: uppercase;
+}
+
+.qa-chip {
+  border-radius: var(--radius-full);
+  padding: var(--spacing-sm) var(--spacing-lg);
+  font-size: var(--font-size-xs);
+  color: var(--color-primary);
+  background: var(--color-primary-bg);
+  border: 1px solid var(--color-primary-border);
+}
+
+/* ===== 文件上传样式 ===== */
+
+.upload-box {
+  border: 1px dashed var(--color-primary-border);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-xl);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  /* 使用浅色背景，与主页风格一致 */
+  background: var(--color-bg-secondary);
+}
+
+.upload-title {
+  margin: 0;
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+}
+
+.upload-desc {
+  margin: var(--spacing-xs) 0 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-base);
+  line-height: 1.5;
+}
+
+.upload-actions {
+  display: flex;
+  gap: var(--spacing-md);
+  align-items: center;
+}
+
+.upload-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-full);
+  background: var(--color-primary);
+  color: var(--color-text-inverse);
+  padding: var(--spacing-sm) var(--spacing-xl);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  box-shadow: var(--shadow-primary);
+  border: none;
+  transition: opacity var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.upload-trigger:hover:not(.disabled) {
+  box-shadow: 0 12px 35px rgba(37, 99, 235, 0.35);
+}
+
+.upload-trigger.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.upload-trigger input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.clear-trigger {
+  border-radius: var(--radius-full);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-bg-tertiary);
+  color: var(--color-text-tertiary);
+  padding: var(--spacing-sm) var(--spacing-xl);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  border: 1px solid var(--color-border-primary);
+  transition: all var(--transition-fast);
+}
+
+.clear-trigger:hover:not(:disabled) {
+  background: var(--color-border-primary);
+  color: var(--color-text-secondary);
+  border-color: var(--color-border-primary);
+}
+
+.clear-trigger:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.upload-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--spacing-md);
+  font-size: var(--font-size-base);
+  color: var(--color-text-primary);
+  background: var(--color-bg-primary);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-md) var(--spacing-lg);
+  border: 1px solid var(--color-border-primary);
+  /* 添加轻微阴影 */
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.upload-error {
+  margin: var(--spacing-xs) 0 0;
+  color: var(--color-error);
+  font-size: var(--font-size-base);
+}
+
+.analysis-summary {
+  margin-top: var(--spacing-sm);
+  background: var(--color-bg-primary);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-md);
+  border: 1px solid var(--color-border-primary);
+  max-height: 220px;
+  overflow: auto;
+  /* 添加轻微阴影 */
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+/* ===== 上下文切换样式 ===== */
+
+.context-toggle {
+  margin-top: var(--spacing-md);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md) 0;
+}
+
+.context-switch {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  cursor: pointer;
+  user-select: none;
+  padding: var(--spacing-sm) 14px;
+  border-radius: var(--radius-full);
+  background: var(--color-bg-primary);
+  border: 1px solid var(--color-border-primary);
+  /* 使用与主页一致的阴影 */
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.context-switch input[type="checkbox"] {
+  display: none;
+}
+
+.context-switch-slider {
+  position: relative;
+  width: 44px;
+  height: 24px;
+  background: var(--color-border-primary);
+  border-radius: var(--radius-lg);
+  transition: background var(--transition-base);
+}
+
+.context-switch-slider::before {
+  content: '';
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--color-bg-primary);
+  top: 2px;
+  left: 2px;
+  transition: transform var(--transition-base);
+  box-shadow: var(--shadow-sm);
+}
+
+.context-switch input[type="checkbox"]:checked ~ .context-switch-slider {
+  background: var(--gradient-primary);
+}
+
+.context-switch input[type="checkbox"]:checked ~ .context-switch-slider::before {
+  transform: translateX(20px);
+}
+
+.context-switch-label {
+  font-size: var(--font-size-base);
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-semibold);
+  padding: 0 var(--spacing-xs);
+}
+
+.context-count {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-primary);
+  background: var(--color-bg-primary);
+  padding: 2px 10px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-border-primary);
+  /* 使用与主页一致的阴影 */
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+/* ===== 加载历史样式 ===== */
+
+.loading-history {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.loading-history-item {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  padding: var(--spacing-sm) 10px;
+  border: 1px dashed var(--color-border-primary);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-secondary);
+}
+
+/* ===== 密码输入模态框样式 ===== */
+
+.password-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: var(--z-modal-content);
+  backdrop-filter: blur(4px);
+}
+
+.password-modal {
+  background: var(--color-bg-primary);
+  border-radius: var(--radius-lg);
+  width: 90%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--shadow-2xl);
+  overflow: hidden;
+}
+
+.password-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-xl) var(--spacing-xl);
+  border-bottom: 1px solid var(--color-border-primary);
+}
+
+.password-modal-header h3 {
+  margin: 0;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+}
+
+.password-modal-close {
+  background: none;
+  border: none;
+  font-size: 28px;
+  line-height: 1;
+  color: var(--color-text-tertiary);
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+}
+
+.password-modal-close:hover {
+  background: var(--color-bg-tertiary);
+  color: var(--color-text-primary);
+}
+
+.password-modal-content {
+  padding: var(--spacing-xl);
+}
+
+.password-input {
+  width: 100%;
+  padding: var(--spacing-md);
+  border: 1px solid var(--color-border-primary);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-base);
+  color: var(--color-text-primary);
+  background: var(--color-bg-primary);
+  box-sizing: border-box;
+}
+
+.password-input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-bg);
+}
+
+.password-error {
+  margin-top: var(--spacing-md);
+  font-size: var(--font-size-sm);
+  color: var(--color-error);
+}
+
+.password-modal-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-lg) var(--spacing-xl);
+  border-top: 1px solid var(--color-border-primary);
+  background: var(--color-bg-secondary);
+  border-bottom-left-radius: var(--radius-lg);
+  border-bottom-right-radius: var(--radius-lg);
+}
+
+.password-btn {
+  padding: var(--spacing-sm) var(--spacing-lg);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all var(--transition-fast);
+}
+
+.password-btn-cancel {
+  background: var(--color-bg-primary);
+  color: var(--color-text-tertiary);
+  border-color: var(--color-border-primary);
+}
+
+.password-btn-cancel:hover {
+  background: var(--color-bg-tertiary);
+  color: var(--color-text-primary);
+}
+
+.password-btn-submit {
+  background: var(--gradient-primary);
+  color: var(--color-text-inverse);
+}
+
+.password-btn-submit:hover {
+  background: var(--gradient-primary-hover);
+}
+
+/* ===== 动画定义 ===== */
+
+@keyframes slow-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ===== 响应式样式 ===== */
+
+@media (max-width: 640px) {
+  body {
+    background-attachment: scroll;
+    -webkit-background-attachment: scroll;
+  }
+
+  .qa-app {
+    padding: 16px 12px 0;
+    gap: 12px;
+    padding-bottom: 0;
+  }
+
+  .qa-header {
+    gap: 8px;
+  }
+
+  .qa-header-left {
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .qa-header h1 {
+    font-size: 22px;
+    margin: 2px 0 0;
+  }
+
+  .prompt-editor-trigger {
+    margin-bottom: 2px;
+  }
+
+  .prompt-editor-trigger img {
+    width: 18px;
+    height: 18px;
+  }
+
+  .music-floating {
+    top: 12px;
+    right: 8px;
+    padding: 5px 8px;
+    gap: 6px;
+    max-width: calc(100% - 16px);
+  }
+
+  .music-inline-label {
+    font-size: 11px;
+  }
+
+  .music-icon {
+    width: 32px;
+    height: 32px;
+  }
+
+  .music-icon img {
+    width: 20px;
+    height: 20px;
+  }
+
+  .music-dropdown {
+    min-width: 140px;
+    padding: 8px 10px;
+    gap: 4px;
+    right: 0;
+    left: auto;
+  }
+
+  .music-track-btn {
+    font-size: 12px;
+    padding: 5px 6px;
+  }
+
+  .music-hover-wrapper::after {
+    top: -8px;
+    bottom: -120px;
+    left: -100px;
+    right: -20px;
+  }
+
+  .qa-chat {
+    padding: 16px 12px;
+    gap: 12px;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+  }
+
+  .bubble {
+    max-width: 85%;
+    padding: 8px 16px;
+    font-size: 14px;
+    border-radius: 16px;
+  }
+
+  .upload-box {
+    padding: 14px 16px;
+    gap: 10px;
+    border-radius: 16px;
+  }
+
+  .upload-title {
+    font-size: 15px;
+  }
+
+  .upload-desc {
+    font-size: 13px;
+    margin-top: 2px;
+  }
+
+  .upload-actions {
+    flex-direction: row;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .upload-trigger,
+  .clear-trigger {
+    flex: 1;
+    padding: 12px 16px;
+    font-size: 13px;
+    justify-content: center;
+    min-height: 44px;
+  }
+
+  .upload-meta {
+    flex-direction: column;
+    gap: 6px;
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+
+  .analysis-summary {
+    padding: 10px;
+    font-size: 13px;
+    max-height: 180px;
+  }
+
+  .context-toggle {
+    margin-top: 10px;
+    padding-top: 10px;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+  }
+
+  .context-switch-label {
+    font-size: 13px;
+  }
+
+  .context-count {
+    font-size: 11px;
+  }
+
+  .loading-content {
+    padding: 10px 16px;
+    gap: 12px;
+  }
+
+  .loading-icon-wrapper {
+    width: 40px;
+    height: 40px;
+  }
+
+  .loading-character {
+    width: 32px;
+    height: 32px;
+  }
+
+  .loading-message {
+    font-size: 14px;
+  }
+
+  .loading-duration {
+    font-size: 12px;
+  }
+
+  .loading-history-item {
+    font-size: 12px;
+    padding: 5px 8px;
+  }
+
+  .qa-input {
+    padding: 8px;
+    gap: 6px;
+    margin-bottom: max(110px, calc(110px + env(safe-area-inset-bottom, 0px)));
+    position: relative;
+    z-index: 10;
+  }
+
+  .qa-input input {
+    padding: 8px 12px;
+    font-size: 14px;
+    min-height: 36px;
+  }
+
+  .qa-input button {
+    padding: 0 16px;
+    font-size: 14px;
+    min-height: 36px;
+  }
+
+  .markdown-body {
+    font-size: 14px;
+    max-width: 100%;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .markdown-body code {
+    font-size: 12px;
+    padding: 2px 4px;
+    word-break: break-all;
+  }
+
+  .markdown-body pre {
+    padding: 12px;
+    font-size: 12px;
+    overflow-x: auto;
+    max-width: 100%;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .markdown-body table {
+    font-size: 12px;
+    width: max-content;
+    min-width: 100%;
+    border-collapse: collapse;
+    display: table;
+  }
+
+  .markdown-body th,
+  .markdown-body td {
+    padding: 6px;
+    white-space: nowrap;
+  }
+
+  .password-modal {
+    width: 95%;
+    max-width: none;
+  }
+
+  .password-modal-header {
+    padding: 16px 20px;
+  }
+
+  .password-modal-header h3 {
+    font-size: 16px;
+  }
+
+  .password-modal-content {
+    padding: 20px;
+  }
+
+  .password-modal-actions {
+    padding: 14px 20px;
+    flex-direction: column-reverse;
+    gap: 8px;
+  }
+
+  .password-btn {
+    width: 100%;
+    padding: 12px 16px;
+    min-height: 44px;
+  }
+}
