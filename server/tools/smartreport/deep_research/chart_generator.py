@@ -16,9 +16,9 @@ try:
     import matplotlib.font_manager as fm
     import platform
     
-    # 配置中文字体
+    # 配置中文字体（与主图表生成器相同的逻辑）
     def setup_chinese_font():
-        """设置中文字体，优先使用系统字体，如果不存在则尝试下载"""
+        """设置中文字体，优先使用系统字体，如果不存在则尝试加载字体文件"""
         system = platform.system()
         
         # 尝试的字体列表（按优先级）
@@ -31,12 +31,63 @@ try:
         else:  # Linux
             font_candidates = [
                 'Noto Sans CJK SC',
+                'Noto Sans CJK',
                 'Source Han Sans CN',
                 'WenQuanYi Micro Hei',
                 'WenQuanYi Zen Hei', 
                 'Droid Sans Fallback',
                 'DejaVu Sans'
             ]
+        
+        # 首先尝试查找已安装的字体文件路径
+        font_file_paths = []
+        home_dir = Path.home()
+        
+        # 检查用户字体目录
+        user_font_dir = home_dir / ".local" / "share" / "fonts"
+        if user_font_dir.exists():
+            for font_file in user_font_dir.glob("*.otf"):
+                if "noto" in font_file.name.lower() or "cjk" in font_file.name.lower():
+                    font_file_paths.append(str(font_file))
+            for font_file in user_font_dir.glob("*.ttf"):
+                if "noto" in font_file.name.lower() or "cjk" in font_file.name.lower() or "chinese" in font_file.name.lower():
+                    font_file_paths.append(str(font_file))
+        
+        # 检查系统字体目录
+        system_font_dirs = [
+            "/usr/share/fonts/truetype/noto",
+            "/usr/share/fonts/truetype",
+            "/usr/share/fonts/opentype/noto",
+        ]
+        for font_dir in system_font_dirs:
+            font_path = Path(font_dir)
+            if font_path.exists():
+                for font_file in font_path.glob("*.otf"):
+                    if "noto" in font_file.name.lower() and "cjk" in font_file.name.lower():
+                        font_file_paths.append(str(font_file))
+                for font_file in font_path.glob("*.ttf"):
+                    if "noto" in font_file.name.lower() and "cjk" in font_file.name.lower():
+                        font_file_paths.append(str(font_file))
+        
+        # 如果找到字体文件，尝试直接加载
+        if font_file_paths:
+            try:
+                font_file_path = font_file_paths[0]
+                print(f"📁 找到字体文件: {font_file_path}")
+                font_prop = fm.FontProperties(fname=font_file_path)
+                font_name = font_prop.get_name()
+                print(f"✅ 加载字体文件: {font_name} ({font_file_path})")
+                plt.rcParams['font.sans-serif'] = [font_name] + font_candidates + ['DejaVu Sans']
+                plt.rcParams['axes.unicode_minus'] = False
+                return font_name
+            except Exception as e:
+                print(f"⚠️  加载字体文件失败: {e}，尝试其他方法...")
+        
+        # 强制重新扫描字体
+        try:
+            fm._rebuild()
+        except:
+            pass
         
         # 查找可用的中文字体
         available_fonts = [f.name for f in fm.fontManager.ttflist]
@@ -47,30 +98,78 @@ try:
                 chinese_font = font_name
                 break
         
-        # 如果找不到，尝试查找任何包含中文支持的字体
         if not chinese_font:
-            # 查找包含 CJK 或中文相关的字体
             for font in fm.fontManager.ttflist:
                 font_name = font.name.lower()
-                if any(keyword in font_name for keyword in ['cjk', 'chinese', 'han', 'hei', 'song', 'kai', 'ming']):
+                if any(keyword in font_name for keyword in ['cjk', 'chinese', 'han', 'hei', 'song', 'kai', 'ming', 'noto']):
                     chinese_font = font.name
                     break
         
-        # 如果还是找不到，使用 DejaVu Sans 作为回退（至少不会显示方框）
+        if not chinese_font and font_file_paths:
+            try:
+                font_file_path = font_file_paths[0]
+                plt.rcParams['font.sans-serif'] = font_candidates + ['DejaVu Sans']
+                plt.rcParams['axes.unicode_minus'] = False
+                print(f"✅ 将使用字体文件路径: {font_file_path}")
+                return font_file_path
+            except Exception as e:
+                print(f"⚠️  无法使用字体文件路径: {e}")
+        
         if not chinese_font:
             chinese_font = 'DejaVu Sans'
             print("⚠️  未找到中文字体，使用 DejaVu Sans 作为回退（可能无法正确显示中文）")
         else:
             print(f"✅ 使用字体: {chinese_font}")
         
-        # 设置字体
         plt.rcParams['font.sans-serif'] = [chinese_font] + font_candidates + ['DejaVu Sans']
-        plt.rcParams['axes.unicode_minus'] = False  # 解决负号显示问题
-        
+        plt.rcParams['axes.unicode_minus'] = False
         return chinese_font
     
     # 初始化字体
-    setup_chinese_font()
+    _chinese_font_name = setup_chinese_font()
+    _chinese_font_file = None
+    
+    def get_chinese_font_prop():
+        """获取中文字体属性，优先使用字体文件路径"""
+        global _chinese_font_file
+        
+        if _chinese_font_file and Path(_chinese_font_file).exists():
+            try:
+                return fm.FontProperties(fname=_chinese_font_file)
+            except:
+                pass
+        
+        home_dir = Path.home()
+        font_dirs = [
+            home_dir / ".local" / "share" / "fonts",
+            Path("/usr/share/fonts/truetype/noto"),
+            Path("/usr/share/fonts/truetype"),
+        ]
+        
+        for font_dir in font_dirs:
+            if not font_dir.exists():
+                continue
+            for font_file in font_dir.glob("*.otf"):
+                if "noto" in font_file.name.lower() and "cjk" in font_file.name.lower():
+                    _chinese_font_file = str(font_file)
+                    try:
+                        return fm.FontProperties(fname=_chinese_font_file)
+                    except:
+                        pass
+            for font_file in font_dir.glob("*.ttf"):
+                if ("noto" in font_file.name.lower() and "cjk" in font_file.name.lower()) or \
+                   ("chinese" in font_file.name.lower()):
+                    _chinese_font_file = str(font_file)
+                    try:
+                        return fm.FontProperties(fname=_chinese_font_file)
+                    except:
+                        pass
+        
+        if _chinese_font_name and isinstance(_chinese_font_name, str) and not Path(_chinese_font_name).exists():
+            return fm.FontProperties(family=_chinese_font_name)
+        
+        return None
+    
     MATPLOTLIB_AVAILABLE = True
 except ImportError:
     MATPLOTLIB_AVAILABLE = False
@@ -476,7 +575,12 @@ class ChartGenerator:
                        f'{height:.1f}' if height < 1000 else f'{height/1000:.1f}K',
                        ha='center', va='bottom', fontsize=9, color='#333333')
             
-            ax.set_ylabel('数值', fontsize=11, color='#666666')
+            # 获取中文字体属性
+            font_prop = get_chinese_font_prop()
+            if font_prop:
+                ax.set_ylabel('数值', fontsize=11, color='#666666', fontproperties=font_prop)
+            else:
+                ax.set_ylabel('数值', fontsize=11, color='#666666')
             # 旋转x轴标签，避免重叠
             plt.xticks(rotation=45, ha='right', fontsize=10)
             
@@ -486,7 +590,12 @@ class ChartGenerator:
             ax.plot(data["labels"], data["values"], marker='o', color=line_color, 
                    linewidth=2.5, markersize=8, markerfacecolor='white', 
                    markeredgewidth=2, markeredgecolor=line_color, zorder=3)
-            ax.set_ylabel('数值', fontsize=11, color='#666666')
+            # 获取中文字体属性
+            font_prop = get_chinese_font_prop()
+            if font_prop:
+                ax.set_ylabel('数值', fontsize=11, color='#666666', fontproperties=font_prop)
+            else:
+                ax.set_ylabel('数值', fontsize=11, color='#666666')
             plt.xticks(rotation=45, ha='right', fontsize=10)
             
         elif chart_type == "pie":
@@ -515,14 +624,25 @@ class ChartGenerator:
             scatter = ax.scatter(data["x"], data["y"], c=color_values, 
                                cmap='viridis', alpha=0.75, s=120, edgecolors='white', 
                                linewidth=1.5, zorder=3)
-            ax.set_xlabel('X轴', fontsize=11, color='#666666')
-            ax.set_ylabel('Y轴', fontsize=11, color='#666666')
+            # 获取中文字体属性
+            font_prop = get_chinese_font_prop()
+            if font_prop:
+                ax.set_xlabel('X轴', fontsize=11, color='#666666', fontproperties=font_prop)
+                ax.set_ylabel('Y轴', fontsize=11, color='#666666', fontproperties=font_prop)
+            else:
+                ax.set_xlabel('X轴', fontsize=11, color='#666666')
+                ax.set_ylabel('Y轴', fontsize=11, color='#666666')
             # 添加颜色条
             cbar = plt.colorbar(scatter, ax=ax)
             cbar.ax.tick_params(colors='#666666', labelsize=9)
         
         # 优化标题样式
-        ax.set_title(title, fontsize=15, fontweight='bold', pad=20, color='#333333')
+        # 获取中文字体属性并设置标题
+        font_prop = get_chinese_font_prop()
+        if font_prop:
+            ax.set_title(title, fontsize=15, fontweight='bold', pad=20, color='#333333', fontproperties=font_prop)
+        else:
+            ax.set_title(title, fontsize=15, fontweight='bold', pad=20, color='#333333')
         
         # 优化坐标轴标签颜色
         ax.tick_params(colors='#666666', labelsize=10)

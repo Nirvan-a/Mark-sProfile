@@ -39,21 +39,34 @@ class PDFGenerator:
     
     async def __aenter__(self):
         """异步上下文管理器入口"""
-        self.playwright = await async_playwright().start()
-        # 使用系统安装的 Chromium（如果已安装）
-        # 否则需要运行: playwright install chromium
-        self.browser = await self.playwright.chromium.launch(
-            headless=True,
-            args=[
-                '--no-sandbox',
-                '--disable-setuid-sandbox',
-                '--disable-dev-shm-usage',
-                '--disable-accelerated-2d-canvas',
-                '--no-first-run',
-                '--no-zygote',
-                '--disable-gpu',
-            ]
-        )
+        try:
+            self.playwright = await async_playwright().start()
+            # 使用系统安装的 Chromium（如果已安装）
+            # 否则需要运行: playwright install chromium
+            self.browser = await self.playwright.chromium.launch(
+                headless=True,
+                args=[
+                    '--no-sandbox',
+                    '--disable-setuid-sandbox',
+                    '--disable-dev-shm-usage',
+                    '--disable-accelerated-2d-canvas',
+                    '--no-first-run',
+                    '--no-zygote',
+                    '--disable-gpu',
+                ]
+            )
+        except Exception as e:
+            error_msg = str(e)
+            if "Executable doesn't exist" in error_msg or "BrowserType.launch" in error_msg:
+                raise PDFGeneratorError(
+                    f"Playwright 浏览器未安装。错误: {error_msg}\n\n"
+                    "请在服务器上运行以下命令安装浏览器:\n"
+                    "  pip install playwright\n"
+                    "  playwright install chromium\n"
+                    "或者运行安装脚本: bash install_playwright.sh"
+                ) from e
+            else:
+                raise PDFGeneratorError(f"启动 Playwright 浏览器失败: {error_msg}") from e
         return self
     
     async def __aexit__(self, exc_type, exc_val, exc_tb):

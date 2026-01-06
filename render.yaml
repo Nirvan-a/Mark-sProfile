@@ -6,7 +6,7 @@ services:
     name: profile-page-api
     runtime: python
     rootDir: server
-    buildCommand: pip install -r requirements.txt && bash install_chinese_fonts.sh || true && playwright install chromium
+    buildCommand: pip install -r requirements.txt && bash install_chinese_fonts.sh || true && bash install_playwright.sh
     startCommand: uvicorn app:app --host 0.0.0.0 --port $PORT
     envVars:
       - key: PYTHON_VERSION

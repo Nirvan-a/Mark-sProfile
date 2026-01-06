@@ -6,10 +6,22 @@ FROM python:3.11-slim
 # 设置工作目录
 WORKDIR /app
 
-# 安装系统依赖
+# 安装系统依赖（包括 Playwright 需要的依赖）
 RUN apt-get update && apt-get install -y \
     gcc \
     g++ \
+    libnss3 \
+    libatk-bridge2.0-0 \
+    libdrm2 \
+    libxkbcommon0 \
+    libxcomposite1 \
+    libxdamage1 \
+    libxfixes3 \
+    libxrandr2 \
+    libgbm1 \
+    libasound2 \
+    libatspi2.0-0 \
+    libxshmfence1 \
     && rm -rf /var/lib/apt/lists/*
 
 # 复制依赖文件
@@ -17,6 +29,9 @@ COPY server/requirements.txt .
 
 # 安装 Python 依赖
 RUN pip install --no-cache-dir -r requirements.txt
+
+# 安装 Playwright 浏览器
+RUN python -m playwright install chromium --with-deps || python -m playwright install chromium
 
 # 复制应用代码
 COPY server/ .
