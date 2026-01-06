@@ -15,7 +15,7 @@
 
 .modal {
   background-color: var(--color-bg-primary);
-  border-radius: var(--border-radius-lg);
+  border-radius: var(--radius-lg);
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
   width: 100%;
   max-width: 600px;
@@ -74,7 +74,7 @@
   background-color: transparent;
   color: var(--color-text-secondary);
   border: none;
-  border-radius: var(--border-radius-md);
+  border-radius: var(--radius-md);
   font-size: var(--font-size-sm);
   cursor: pointer;
   transition: all 0.2s;
@@ -98,7 +98,7 @@
   right: 0;
   background-color: var(--color-bg-primary);
   border: 1px solid var(--color-border-secondary);
-  border-radius: var(--border-radius-md);
+  border-radius: var(--radius-md);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   overflow: hidden;
   min-width: 120px;
@@ -148,7 +148,7 @@
   font-size: 24px;
   color: var(--color-text-secondary);
   cursor: pointer;
-  border-radius: var(--border-radius-sm);
+  border-radius: var(--radius-sm);
   transition: all 0.2s;
 }
 
@@ -218,7 +218,7 @@
   height: auto;
   display: block;
   margin: var(--spacing-md) auto;
-  border-radius: var(--border-radius-md);
+  border-radius: var(--radius-md);
 }
 
 /* 表格样式 */
