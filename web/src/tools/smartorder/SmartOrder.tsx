@@ -43,21 +43,12 @@ export default function SmartOrder() {
     '我是清淡口味的',
     '运动套餐有什么推荐',
   ])
-  const [showRecommendModal, setShowRecommendModal] = useState(false)
   const [showAttrsModal, setShowAttrsModal] = useState(false)
   const [editingItem, setEditingItem] = useState<any>(null)
   const [editingAttrs, setEditingAttrs] = useState<ItemAttributes>({})
 
   const chatContainerRef = useRef<HTMLDivElement>(null)
   const previousMessagesLengthRef = useRef<number>(0)
-
-  // 页面加载时显示推荐弹窗
-  useEffect(() => {
-    const hideModal = localStorage.getItem('recommend-modal-hide')
-    if (!hideModal) {
-      setTimeout(() => setShowRecommendModal(true), 500)
-    }
-  }, [])
 
   // 滚动到底部
   const scrollToBottom = () => {
@@ -811,38 +802,6 @@ export default function SmartOrder() {
     </div>
   )
 
-  // 渲染推荐弹窗
-  const renderRecommendModal = () => {
-    if (!showRecommendModal) return null
-
-    return (
-      <div className="modal-overlay">
-        <div className="modal-mask" onClick={() => setShowRecommendModal(false)}></div>
-        <div className="modal-box">
-          <div className="modal-title">今日推荐 · 新品必点</div>
-          <div className="modal-list">
-            {/* 这里可以从 CATALOG.new 中取前两个商品 */}
-          </div>
-          <div className="modal-actions">
-            <button className="modal-close" onClick={() => {
-              setShowRecommendModal(false)
-              localStorage.setItem('recommend-modal-hide', '1')
-            }}>
-              关闭
-            </button>
-            <button className="modal-order" onClick={() => {
-              setShowRecommendModal(false)
-              localStorage.setItem('recommend-modal-hide', '1')
-              handleSendMessage('今日推荐')
-            }}>
-              一键下单
-            </button>
-          </div>
-        </div>
-      </div>
-    )
-  }
-
   // 渲染属性编辑弹窗
   const renderAttrsModal = () => {
     if (!showAttrsModal) return null
@@ -936,7 +895,6 @@ export default function SmartOrder() {
         <HomeButton />
       </div>
       <PhoneFrame>{renderCurrentPage()}</PhoneFrame>
-      {renderRecommendModal()}
       {renderAttrsModal()}
     </div>
   )
