@@ -16,16 +16,61 @@ try:
     import matplotlib.font_manager as fm
     import platform
     
-    # 根据系统选择合适的中文字体
-    system = platform.system()
-    if system == 'Darwin':  # macOS
-        plt.rcParams['font.sans-serif'] = ['PingFang SC', 'Arial Unicode MS', 'Heiti TC', 'STHeiti']
-    elif system == 'Windows':
-        plt.rcParams['font.sans-serif'] = ['Microsoft YaHei', 'SimHei', 'SimSun']
-    else:  # Linux
-        plt.rcParams['font.sans-serif'] = ['Droid Sans Fallback', 'DejaVu Sans', 'WenQuanYi Micro Hei']
+    # 配置中文字体
+    def setup_chinese_font():
+        """设置中文字体，优先使用系统字体，如果不存在则尝试下载"""
+        system = platform.system()
+        
+        # 尝试的字体列表（按优先级）
+        font_candidates = []
+        
+        if system == 'Darwin':  # macOS
+            font_candidates = ['PingFang SC', 'Arial Unicode MS', 'Heiti TC', 'STHeiti', 'STSong']
+        elif system == 'Windows':
+            font_candidates = ['Microsoft YaHei', 'SimHei', 'SimSun', 'KaiTi']
+        else:  # Linux
+            font_candidates = [
+                'WenQuanYi Micro Hei',
+                'WenQuanYi Zen Hei', 
+                'Noto Sans CJK SC',
+                'Source Han Sans CN',
+                'Droid Sans Fallback',
+                'DejaVu Sans'
+            ]
+        
+        # 查找可用的中文字体
+        available_fonts = [f.name for f in fm.fontManager.ttflist]
+        chinese_font = None
+        
+        for font_name in font_candidates:
+            if font_name in available_fonts:
+                chinese_font = font_name
+                break
+        
+        # 如果找不到，尝试查找任何包含中文支持的字体
+        if not chinese_font:
+            # 查找包含 CJK 或中文相关的字体
+            for font in fm.fontManager.ttflist:
+                font_name = font.name.lower()
+                if any(keyword in font_name for keyword in ['cjk', 'chinese', 'han', 'hei', 'song', 'kai', 'ming']):
+                    chinese_font = font.name
+                    break
+        
+        # 如果还是找不到，使用 DejaVu Sans 作为回退（至少不会显示方框）
+        if not chinese_font:
+            chinese_font = 'DejaVu Sans'
+            print("⚠️  未找到中文字体，使用 DejaVu Sans 作为回退（可能无法正确显示中文）")
+        else:
+            print(f"✅ 使用字体: {chinese_font}")
+        
+        # 设置字体
+        plt.rcParams['font.sans-serif'] = [chinese_font] + font_candidates + ['DejaVu Sans']
+        plt.rcParams['axes.unicode_minus'] = False  # 解决负号显示问题
+        
+        return chinese_font
     
-    plt.rcParams['axes.unicode_minus'] = False  # 解决负号显示问题
+    # 初始化字体
+    setup_chinese_font()
     MATPLOTLIB_AVAILABLE = True
 except ImportError:
     MATPLOTLIB_AVAILABLE = False

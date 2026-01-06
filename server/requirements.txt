@@ -21,6 +21,7 @@ pypdf>=3.0.0
 docx2txt>=0.8
 # Chart generation dependencies
 matplotlib>=3.7.0
+fonttools>=4.0.0  # 字体工具，用于字体管理
 # PDF generation dependencies (optional)
 playwright>=1.40.0
 
