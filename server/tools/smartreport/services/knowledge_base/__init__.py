@@ -42,7 +42,7 @@ if DOCUMENTS_BASE:
     DOCUMENTS_DIR = Path(DOCUMENTS_BASE)
 else:
     # 默认使用内置文档目录（作为项目代码的一部分，部署时会一起打包）
-DOCUMENTS_DIR = Path(__file__).parent.parent.parent / "resources" / "documents"
+    DOCUMENTS_DIR = Path(__file__).parent.parent.parent / "resources" / "documents"
 # 确保目录存在（内置文档目录应该始终存在，但创建一下更安全）
 DOCUMENTS_DIR.mkdir(parents=True, exist_ok=True)
 
