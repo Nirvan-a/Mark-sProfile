@@ -416,3 +416,39 @@ async def generate_pdf(payload: GeneratePDFRequest):
         ) from e
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"生成 PDF 失败: {str(e)}")
+
+
+@router.get("/smartreport/example")
+async def get_example_report():
+    """
+    获取示例报告内容
+    """
+    try:
+        # 获取示例文件路径
+        example_file = Path(__file__).parent / "resources" / "example" / "example.md"
+        
+        if not example_file.exists():
+            raise HTTPException(status_code=404, detail="示例文件不存在")
+        
+        # 读取文件内容
+        content = example_file.read_text(encoding="utf-8")
+        
+        # 提取标题（第一行的 # 标题）
+        title = "示例报告"
+        lines = content.split("\n")
+        for line in lines:
+            if line.startswith("# "):
+                title = line[2:].strip()
+                break
+        
+        # 替换图表路径：从 /static/charts/ 改为 /static/example/
+        content = content.replace("/static/charts/", "/static/example/")
+        
+        return {
+            "title": title,
+            "content": content
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"读取示例文件失败: {str(e)}")

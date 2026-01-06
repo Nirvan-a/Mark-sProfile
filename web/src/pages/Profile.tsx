@@ -276,7 +276,7 @@ export default function Profile() {
                   Mark Ma
                 </h1>
                 <p className="text-base sm:text-lg text-gray-600 mb-4 sm:mb-5 px-4">
-                  专注于AI产品设计与开发，致力于用AI提升用户的工作效率和生活品质
+                  专注AI产品设计与开发，致力于将AI融入日常生活
                 </p>
 
                 {/* Contact Links */}

@@ -38,7 +38,7 @@ export const toolsRegistry: ToolMetadata[] = [
   {
     id: 'askdata',
     name: '智能问数',
-    description: '上传 Excel 文件，通过自然语言查询数据',
+    description: 'Excel数据自然语言查询助手',
     icon: '📊',
     image: askdataBg,
     component: () => import('../tools/askdata'),
@@ -46,7 +46,7 @@ export const toolsRegistry: ToolMetadata[] = [
   {
     id: 'smartreport',
     name: '智能报告',
-    description: '按照要求撰写长文报告，自动生成大纲并完成撰写',
+    description: '推理检索，深度报告生成助手',
     icon: '📝',
     image: smartreportBg,
     component: () => import('../tools/smartreport'),
@@ -54,7 +54,7 @@ export const toolsRegistry: ToolMetadata[] = [
   {
     id: 'smartorder',
     name: '智能点单',
-    description: '智能点单助手，帮助您快速完成点单',
+    description: '一个参与竞标的AI点单原型设计',
     icon: '🍽️',
     image: smartorderBg,
     component: () => import('../tools/smartorder'),
@@ -62,7 +62,7 @@ export const toolsRegistry: ToolMetadata[] = [
   {
     id: 'smartplan',
     name: '智能规划',
-    description: '智能规划助手，帮助您制定计划',
+    description: '可联网、代码、文件等的规划助手',
     icon: '📅',
     image: smartplanBg,
     component: () => import('../tools/smartplan'),

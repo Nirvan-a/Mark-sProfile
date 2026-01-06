@@ -61,6 +61,12 @@ documents_dir.mkdir(parents=True, exist_ok=True)
 app.mount("/documents", StaticFiles(directory=str(documents_dir)), name="documents")
 print(f"✓ 已挂载文档下载服务: /documents -> {documents_dir}")
 
+# 挂载示例文件服务（smartreport工具）
+example_dir = Path(__file__).parent / "tools" / "smartreport" / "resources" / "example"
+example_dir.mkdir(parents=True, exist_ok=True)
+app.mount("/static/example", StaticFiles(directory=str(example_dir)), name="example")
+print(f"✓ 已挂载示例文件服务: /static/example -> {example_dir}")
+
 
 # 全局异常处理
 @app.exception_handler(Exception)

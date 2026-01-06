@@ -41,6 +41,17 @@ try:
         
         # 首先尝试查找已安装的字体文件路径
         font_file_paths = []
+        
+        # 优先检查项目内的字体目录（最可靠的方式）
+        project_font_dir = Path(__file__).parent.parent.parent / "resources" / "fonts"
+        if project_font_dir.exists():
+            for font_file in project_font_dir.glob("*.otf"):
+                if "noto" in font_file.name.lower() or "cjk" in font_file.name.lower() or "chinese" in font_file.name.lower():
+                    font_file_paths.append(str(font_file))
+            for font_file in project_font_dir.glob("*.ttf"):
+                if "noto" in font_file.name.lower() or "cjk" in font_file.name.lower() or "chinese" in font_file.name.lower():
+                    font_file_paths.append(str(font_file))
+        
         home_dir = Path.home()
         
         # 检查用户字体目录
@@ -139,6 +150,25 @@ try:
             except:
                 pass
         
+        # 优先尝试查找项目内的字体文件
+        project_font_dir = Path(__file__).parent.parent.parent / "resources" / "fonts"
+        if project_font_dir.exists():
+            for font_file in project_font_dir.glob("*.otf"):
+                if "noto" in font_file.name.lower() or "cjk" in font_file.name.lower() or "chinese" in font_file.name.lower():
+                    _chinese_font_file = str(font_file)
+                    try:
+                        return fm.FontProperties(fname=_chinese_font_file)
+                    except:
+                        pass
+            for font_file in project_font_dir.glob("*.ttf"):
+                if "noto" in font_file.name.lower() or "cjk" in font_file.name.lower() or "chinese" in font_file.name.lower():
+                    _chinese_font_file = str(font_file)
+                    try:
+                        return fm.FontProperties(fname=_chinese_font_file)
+                    except:
+                        pass
+        
+        # 尝试查找系统字体文件
         home_dir = Path.home()
         font_dirs = [
             home_dir / ".local" / "share" / "fonts",

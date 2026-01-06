@@ -1,6 +1,32 @@
 /* 智能报告工具专用样式 */
 /* 通用聊天界面样式已移至 shared/styles/chat.css */
 
+/* ===== 文件上传样式 ===== */
+
+.upload-box {
+  border: 1px dashed var(--color-primary-border);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-xl);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  /* 使用浅色背景，与主页风格一致 */
+  background: var(--color-bg-secondary);
+}
+
+.upload-title {
+  margin: 0;
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+}
+
+.upload-desc {
+  margin: var(--spacing-xs) 0 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-base);
+  line-height: 1.5;
+}
+
 .workflow-nodes-container {
   margin: 16px 0;
   display: flex;
@@ -213,6 +239,21 @@
   .qa-panel-stack {
     height: auto;
     min-height: 420px;
+  }
+
+  .upload-box {
+    padding: 14px 16px;
+    gap: 10px;
+    border-radius: 16px;
+  }
+
+  .upload-title {
+    font-size: 15px;
+  }
+
+  .upload-desc {
+    font-size: 13px;
+    margin-top: 2px;
   }
 }
 

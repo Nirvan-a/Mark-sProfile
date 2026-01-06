@@ -165,7 +165,8 @@ function App() {
   }, [loadingPhase])
 
   useEffect(() => {
-    if (chatContainerRef.current) {
+    // 只有在有消息时才自动滚动到底部，避免初始状态时滚动导致上传组件被滑上去
+    if (chatContainerRef.current && messages.length > 0) {
       chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight
     }
   }, [messages, loadingPhase])
@@ -773,8 +774,7 @@ function App() {
       <div>
               <p className="upload-title">上传 Excel 文件</p>
               <p className="upload-desc">
-                支持 .xlsx / .xls，文件会发送至本地 Python 服务，由 pandas
-                自动解析用于问答。
+                支持上传第一行为表头的 .xlsx / .xls文件，使用自然语言查询。<strong>初次解析时间可能较长(1min左右)</strong>。下方为示例
         </p>
       </div>
             <div className="upload-actions">
@@ -843,6 +843,93 @@ function App() {
               </>
             )}
           </div>
+        )}
+        {messages.length === 0 && (
+          <>
+            <div className="bubble user">
+              <div className="markdown-body">
+                示例问题：请你帮我整体分析一下表格。
+              </div>
+            </div>
+            <div className="bubble assistant">
+              <div className="markdown-body">
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                  {`示例回复：
+
+# 表格整体分析摘要
+
+## 基本结构
+- **数据规模**：共 2,500 条记录，涵盖 26 个字段。
+- **时间范围**：从 \`2024-01-01\` 到 \`2025-12-31\`，覆盖完整两年生产周期。
+
+---
+
+## 关键维度分布
+
+| 维度 | 类别数 | 主要类别（频次） |
+|------|-------|----------------|
+| 地区（region） | 7 | 华中（371） |
+| 工厂（plant） | 9 | A3-焊装厂（315） |
+| 生产线（line） | 8 | L03（341） |
+| 班次（shift） | 2 | 白班（1,437） |
+| 产品线（product_line） | 5 | SUV（975） |
+| 动力类型（powertrain） | 4 | ICE（1,159） |
+| 供应商国家（supplier_country） | 7 | 中国 CN（1,508） |
+| 运输方式（shipping_mode） | 4 | 海运（1,139） |
+
+> ⚠️ 数据以"华中"地区、SUV 车型、ICE 动力系统和国内供应商为主导。
+
+---
+
+## 核心生产与运营指标（数值型统计）
+
+| 指标 | 平均值 | 中位数 | 标准差 | 范围 |
+|------|--------|--------|--------|------|
+| 计划产量（planned_units） | 638.15 | 609 | 201.51 | 250–1,204 |
+| 实际产量（actual_units） | 625.85 | 596 | 199.39 | 244–1,200 |
+| 合格品数量（good_units） | 620.70 | 591 | 197.80 | 242–1,187 |
+| 缺陷率（defect_rate） | 0.82% | 0.80% | 0.21% | 0.26%–1.46% |
+| 设备停机时间（downtime_minutes） | 39.7 min | 33 min | 28.21 min | 1–244 min |
+| OEE（设备综合效率） | 88.78% | 90.24% | 6.90% | 44.05%–99.27% |
+| 单位能耗（energy_kwh） | 4,044.66 kWh | 3,652.75 kWh | 1,615.76 | 1,155–9,039 kWh |
+| CO₂ 排放（co2_kg） | 2,409.86 kg | 2,008.9 kg | 1,317.51 | 574.6–6,796 kg |
+| 质保索赔（warranty_claims） | 0.103 次/批次 | 0 | 0.32 | 0–2 次 |
+
+---
+
+## 初步洞察
+
+1. **高生产稳定性**
+   - 实际产量接近计划产量（平均仅差约 12 台），标准差较低，表明排产执行较稳定。
+   - 缺陷率控制良好，中位值为 0.8%，波动小（标准差 0.21%）。
+
+2. **OEE 表现优异但存在异常点**
+   - 平均 OEE 达 **88.78%**，中位数更高（90.24%），多数时段效率良好。
+   - 最低值仅为 **44.05%**，提示个别班次或产线存在严重性能损失，需进一步排查。
+
+3. **库存管理风险**
+   - \`inventory_units\` 存在负值（最小 -50），可能反映库存核算错误或缺货调拨问题，建议核查逻辑。
+
+4. **供应链集中度较高**
+   - 80 家供应商中，前几大供应频繁（如 S-063 出现 48 次），且 **60.3% 来自中国（CN）**，存在地域集中风险。
+
+5. **能源与排放强度显著**
+   - 单批平均耗电超 **4,000 kWh**，CO₂ 排放近 **2.4 吨**，绿色制造优化空间较大。
+
+6. **质保反馈稀疏但存在**
+   - 多数批次无索赔（75% 分位为 0），但最大达 2 次，结合缺陷率可做关联分析识别高风险型号。
+
+---
+
+## 建议后续分析方向
+- 按 \`region\`, \`plant\`, \`product_line\` 分组对比 OEE 与 defect rate 差异。
+- 分析 \`downtime_minutes\` 与 \`oee\` 的相关性。
+- 探索高 \`warranty_claims\` 批次是否集中在特定 \`model\` 或 \`supplier\`。
+- 对负 \`inventory_units\` 进行根因分析。`}
+                </ReactMarkdown>
+              </div>
+            </div>
+          </>
         )}
         {messages.map((msg, index) => (
           <Fragment key={`${msg.role}-${index}-${msg.content?.length || 0}-${msg.history?.length || 0}`}>

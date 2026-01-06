@@ -80,6 +80,9 @@ export default function SmartReport() {
   const [finalReport, setFinalReport] = useState('')
   const [reportTitle, setReportTitle] = useState<string>('')  // 报告标题
   const [isPreviewOpen, setIsPreviewOpen] = useState(false)
+  const [isExamplePreview, setIsExamplePreview] = useState(false)  // 是否为示例预览
+  const [exampleReportContent, setExampleReportContent] = useState<string>('')  // 示例报告内容
+  const [exampleReportTitle, setExampleReportTitle] = useState<string>('')  // 示例报告标题
   const [loadingPhase, setLoadingPhase] = useState<LoadingPhase>(null)
   const [loadingDuration, setLoadingDuration] = useState(0)
   const [loadingMessage, setLoadingMessage] = useState('')
@@ -200,6 +203,26 @@ export default function SmartReport() {
     timestamp: number
   }>>([])
 
+
+  // 加载示例报告内容（只在组件首次加载时执行一次）
+  useEffect(() => {
+    const loadExampleReport = async () => {
+      try {
+        const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8001'
+        const response = await fetch(`${apiBaseUrl}/api/smartreport/example`)
+        if (response.ok) {
+          const data = await response.json()
+          setExampleReportTitle(data.title || '')
+          setExampleReportContent(data.content || '')
+        }
+      } catch (error) {
+        console.error('加载示例报告失败:', error)
+      }
+    }
+    
+    loadExampleReport()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []) // 空依赖数组，只在组件挂载时执行一次
 
   useEffect(() => {
     if (loadingPhase === null || loadingPhase === 'completed') {
@@ -1515,14 +1538,32 @@ export default function SmartReport() {
       <main ref={chatContainerRef} className="qa-chat">
         {/* 消息区始终在外层，不参与翻转 */}
         {messages.length === 0 && (
-          <div className="upload-box">
-            <div>
-              <p className="upload-title">请输入想要撰写的报告内容</p>
-              <p className="upload-desc">
-                输入您的报告要求，系统将自动生成报告大纲并完成撰写。
-              </p>
+          <>
+            <div className="upload-box">
+              <div>
+                <p className="upload-title">请输入想要撰写的报告内容</p>
+                <p className="upload-desc">
+                  模型将自动生成可确认的<strong>大纲</strong>，并通过<strong>反复推理</strong>、知识库/联网检索完成长文报告。下方为示例
+                </p>
+              </div>
             </div>
-          </div>
+            <div className="smart-report-preview-btn-container">
+              <button
+                className="smart-report-preview-btn"
+                onClick={() => {
+                  setIsExamplePreview(true)
+                  setIsPreviewOpen(true)
+                }}
+              >
+                <img
+                  src={repoIcon}
+                  alt="报告"
+                  className="smart-report-preview-btn-icon"
+                />
+                {exampleReportTitle || ''}
+              </button>
+            </div>
+          </>
         )}
 
         {messages
@@ -1641,7 +1682,10 @@ export default function SmartReport() {
                 <div className="smart-report-preview-btn-container">
                   <button
                     className="smart-report-preview-btn"
-                    onClick={() => setIsPreviewOpen(true)}
+                    onClick={() => {
+                      setIsExamplePreview(false)
+                      setIsPreviewOpen(true)
+                    }}
                   >
                     <img
                       src={repoIcon}
@@ -1714,10 +1758,13 @@ export default function SmartReport() {
 
       <ReportPreview
         isOpen={isPreviewOpen}
-        onClose={() => setIsPreviewOpen(false)}
-        content={finalReport}
-        title={reportTitle || '报告预览'}
-        reportTitle={reportTitle}
+        onClose={() => {
+          setIsPreviewOpen(false)
+          setIsExamplePreview(false)
+        }}
+        content={isExamplePreview ? exampleReportContent : finalReport}
+        title={isExamplePreview ? (exampleReportTitle || '示例报告预览') : (reportTitle || '报告预览')}
+        reportTitle={isExamplePreview ? exampleReportTitle : reportTitle}
       />
     </div>
   )
