@@ -119,6 +119,13 @@ app.add_middleware(
     allow_credentials=True,
 )
 
+# 根路径健康检查（Render 健康检查使用）
+@app.get("/")
+def root():
+    """根路径健康检查"""
+    return {"status": "ok", "message": "Profile Page API"}
+
+
 # 通用 API 路由
 api_router = APIRouter(prefix="/api")
 
