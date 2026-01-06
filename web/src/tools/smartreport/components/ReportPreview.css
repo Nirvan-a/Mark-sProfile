@@ -180,16 +180,18 @@
   margin-top: var(--spacing-xl);
   margin-bottom: var(--spacing-md);
   color: var(--color-text-primary);
+  border-bottom: none !important;
 }
 
 .report-preview-content h1 {
   font-size: var(--font-size-3xl);
-  border-bottom: 2px solid var(--color-border-primary);
-  padding-bottom: var(--spacing-sm);
+  border-bottom: none !important;
+  padding-bottom: 0;
 }
 
 .report-preview-content h2 {
   font-size: var(--font-size-2xl);
+  border-bottom: none !important;
 }
 
 .report-preview-content h3 {
