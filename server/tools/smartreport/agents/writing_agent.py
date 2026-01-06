@@ -137,7 +137,7 @@ class WritingAgent:
      * **图表**：适合展示趋势（折线图line）、占比（饼图pie）、对比（柱状图bar）、相关性（散点图scatter）。使用格式：`[CHART:类型:描述:章节标题]`，例如：`[CHART:bar:2020-2023年全球核电装机容量对比:### 装机容量分析]`。插入位置必须是章节标题（## 一级标题 或 ### 二级标题），图表将插入到该章节的末尾。
      * 图表一章节只能使用一个。表格和图表可以同时使用，它们服务于不同的数据展示需求。
 6. **引用标注**：
-   - 严禁在正文中使用任何形式的文内引用标注（[ref_1]、[1]、[^ref_1] 等）
+   - 严禁在正文中使用任何形式的文内引用标注
    - 在章节末尾单独一行写：CITATIONS: ref_1, ref_3, ref_5（未使用则写：CITATIONS:）
 7. 确保内容与报告大纲一致，必须完整，有足够深度和细节
 8. 如果提供了历史章节或检索结果，需要参考并充分整合信息"""
@@ -307,52 +307,65 @@ class WritingAgent:
                 "citations": List[Dict]  # 实际使用的引用列表
             }
         """
-        # 查找 CITATIONS: 行（不区分大小写，允许前后有空格）
         import re
-        citations_line = ""
+        
+        # 收集所有找到的引用ID（可能有多处CITATIONS标记）
+        all_used_ref_ids = set()
+        
+        # 方法1: 查找所有包含 CITATIONS: 的行（整行匹配）
         content_lines = content.split("\n")
-        citations_line_index = -1
+        lines_to_remove = []  # 记录需要移除的行索引
         
-        # 从后往前找 CITATIONS 行
-        for i in range(len(content_lines) - 1, -1, -1):
-            line = content_lines[i].strip()
-            # 使用正则表达式匹配，支持两种格式：
-            # 1. CITATIONS: ref_1, ref_2
-            # 2. [CITATIONS: ref_1, ref_2]
-            if re.search(r'citations\s*:', line, re.IGNORECASE):
-                citations_line = line
-                citations_line_index = i
-                print(f"🔍 [_extract_citations] 在第 {i} 行找到 CITATIONS: {line}")
-                # 移除这一行及其后面的所有内容
-                content_lines = content_lines[:i]
-                break
+        for i, line in enumerate(content_lines):
+            line_stripped = line.strip()
+            # 匹配整行都是 CITATIONS 标记的情况
+            # 支持格式：CITATIONS: ref_1, ref_2 或 [CITATIONS: ref_1, ref_2]
+            if re.search(r'^\s*\[?\s*citations\s*:', line_stripped, re.IGNORECASE):
+                lines_to_remove.append(i)
+                print(f"🔍 [_extract_citations] 在第 {i} 行找到 CITATIONS 行: {line_stripped}")
+                
+                # 提取引用ID
+                citations_part = re.sub(r'^\[?\s*citations\s*:\s*', '', line_stripped, flags=re.IGNORECASE)
+                citations_part = re.sub(r'\]?\s*$', '', citations_part).strip()
+                if citations_part:
+                    ref_ids = [ref_id.strip() for ref_id in citations_part.split(",") if ref_id.strip()]
+                    all_used_ref_ids.update(ref_ids)
         
-        if citations_line_index == -1:
-            print(f"⚠️  [_extract_citations] 未找到 CITATIONS 行，LLM可能没有遵循指令")
+        # 方法2: 查找正文中嵌入的 CITATIONS 标记（不是单独一行）
+        # 匹配模式：CITATIONS: ref_1, ref_2 或 [CITATIONS: ref_1, ref_2]
+        inline_pattern = r'(?i)\[?\s*citations\s*:\s*([^\]]+?)\]?\s*'
+        inline_matches = re.findall(inline_pattern, content)
+        for match in inline_matches:
+            ref_ids = [ref_id.strip() for ref_id in match.split(",") if ref_id.strip()]
+            all_used_ref_ids.update(ref_ids)
+            print(f"🔍 [_extract_citations] 在正文中找到嵌入的 CITATIONS: {match}")
+        
+        # 移除所有包含 CITATIONS 的行（从后往前移除，避免索引变化）
+        for i in sorted(lines_to_remove, reverse=True):
+            content_lines.pop(i)
+        
+        # 重新组装内容
+        clean_content = "\n".join(content_lines)
+        
+        # 移除正文中嵌入的 CITATIONS 标记
+        clean_content = re.sub(inline_pattern, '', clean_content)
+        
+        # 清理多余的空行（连续3个以上空行合并为2个）
+        clean_content = re.sub(r'\n{3,}', '\n\n', clean_content)
+        clean_content = clean_content.strip()
+        
+        if not all_used_ref_ids:
+            print(f"⚠️  [_extract_citations] 未找到任何 CITATIONS 标记，LLM可能没有遵循指令")
             # 显示最后几行，帮助调试
             print(f"📄 [_extract_citations] 内容最后5行:")
             for line in content_lines[-5:]:
                 print(f"  | {line}")
         
-        # 重新组装内容（不包含 CITATIONS 行）
-        clean_content = "\n".join(content_lines).strip()
-        
-        # 解析引用的 ref_id
-        used_ref_ids = []
-        if citations_line:
-            # 提取 "CITATIONS:" 后面的内容，支持 [CITATIONS: ...] 格式
-            # 先移除方括号，再提取 CITATIONS: 后面的内容
-            citations_part = re.sub(r'^\[?\s*citations\s*:\s*', '', citations_line, flags=re.IGNORECASE)
-            citations_part = re.sub(r'\]?\s*$', '', citations_part).strip()
-            if citations_part:
-                # 按逗号分割，清理空格
-                used_ref_ids = [ref_id.strip() for ref_id in citations_part.split(",") if ref_id.strip()]
-        
         # 根据 ref_id 过滤 search_results
         used_citations = []
         for result in search_results:
             ref_id = result.get("ref_id", "")
-            if ref_id in used_ref_ids:
+            if ref_id in all_used_ref_ids:
                 # 提取需要的字段
                 citation = {
                     "source": result.get("source", ""),
@@ -363,8 +376,7 @@ class WritingAgent:
                 }
                 used_citations.append(citation)
         
-        print(f"📝 [_extract_citations] 找到 CITATIONS 行: {citations_line}")
-        print(f"📝 [_extract_citations] 使用的 ref_id: {used_ref_ids}")
+        print(f"📝 [_extract_citations] 找到的引用 ref_id: {sorted(all_used_ref_ids)}")
         print(f"📝 [_extract_citations] 匹配到的引用: {len(used_citations)} 个")
         
         return {
@@ -404,7 +416,7 @@ class WritingAgent:
         Returns:
             如果找到图表标记，返回：
             {
-                "content": str,  # 移除标记后的内容
+                "content": str,  # 移除所有标记后的内容
                 "requirement": {
                     "chart_type": str,  # "bar", "line", "pie", "scatter"
                     "chart_description": str,  # 图表描述
@@ -419,14 +431,22 @@ class WritingAgent:
         
         # 匹配 [CHART:类型:描述:章节标题] 格式
         pattern = r'\[CHART:([^:]+):([^:]+):([^\]]+)\]'
-        match = re.search(pattern, content)
         
-        if not match:
+        # 找到所有图表标记
+        all_matches = list(re.finditer(pattern, content))
+        
+        if not all_matches:
             return None
         
-        chart_type = match.group(1).strip()
-        chart_description = match.group(2).strip()
-        insert_after_section = match.group(3).strip()
+        # 记录找到的图表标记数量
+        if len(all_matches) > 1:
+            print(f"⚠️  [WritingAgent] 检测到 {len(all_matches)} 个图表标记，但每个章节只支持一个图表，将使用第一个")
+        
+        # 使用第一个匹配来提取图表需求信息
+        first_match = all_matches[0]
+        chart_type = first_match.group(1).strip()
+        chart_description = first_match.group(2).strip()
+        insert_after_section = first_match.group(3).strip()
         
         # 验证图表类型
         valid_types = ["bar", "line", "pie", "scatter"]
@@ -438,11 +458,17 @@ class WritingAgent:
         if not (insert_after_section.startswith("##") or insert_after_section.startswith("###")):
             print(f"⚠️  [WritingAgent] 插入位置不是有效的章节标题格式: {insert_after_section}，将尝试匹配")
         
-        # 移除标记
-        content_without_marker = content.replace(match.group(0), "").strip()
+        # 移除所有图表标记（不仅仅是第一个）
+        content_without_markers = content
+        for match in all_matches:
+            content_without_markers = content_without_markers.replace(match.group(0), "")
+        
+        # 清理多余的空行和空格
+        content_without_markers = re.sub(r'\n{3,}', '\n\n', content_without_markers)
+        content_without_markers = content_without_markers.strip()
         
         return {
-            "content": content_without_marker,
+            "content": content_without_markers,
             "requirement": {
                 "chart_type": chart_type,
                 "chart_description": chart_description,
@@ -464,13 +490,29 @@ class WritingAgent:
         """
         import re
         
-        # 移除各种格式的文内引用：
-        # [ref_1], [ref_2], [1], [2], [^ref_1], [^1] 等
+        # 移除各种格式的文内引用标记（防御性处理，即使模型不完美执行也能移除）
         patterns = [
+            # 英文方括号格式
             r'\[ref_\d+\]',           # [ref_1], [ref_2]
             r'\[\^ref_\d+\]',          # [^ref_1], [^ref_2]
             r'\[\^\d+\]',              # [^1], [^2]
             r'(?<!\[)\[\d+\](?!\()',  # [1], [2] (但不匹配链接格式 [[1]](url))
+            
+            # 中文括号格式
+            r'（ref_\d+）',            # （ref_1），（ref_2）
+            r'\(ref_\d+\)',            # (ref_1), (ref_2) - 英文圆括号
+            r'（\d+）',                # （1），（2）
+            # 英文圆括号格式（更精确匹配，避免误删数学公式）
+            # 匹配前面是中文、空格或标点，后面是标点或换行的 (数字) 格式
+            r'(?<=[。，、；：\s\u4e00-\u9fff])\(\d+\)(?=[。，、；：\s\n]|$)',  # (1), (2) - 在中文语境中
+            
+            # 上标格式（如果模型使用了上标）
+            r'ref_\d+[⁰¹²³⁴⁵⁶⁷⁸⁹]+',  # ref_1¹, ref_2²
+            r'\d+[⁰¹²³⁴⁵⁶⁷⁸⁹]+',      # 1¹, 2²
+            
+            # 其他可能的格式
+            r'【ref_\d+】',            # 【ref_1】
+            r'「ref_\d+」',            # 「ref_1」
         ]
         
         cleaned_content = content
