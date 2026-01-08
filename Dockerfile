@@ -39,10 +39,13 @@ COPY server/ .
 # 暴露端口（平台会自动设置 PORT 环境变量）
 EXPOSE 8001
 
+# 设置默认 PORT 环境变量（Railway 会自动覆盖）
+ENV PORT=8001
+
 # 确保启动脚本可执行
-RUN chmod +x start.sh
+RUN chmod +x start.sh start.py
 
 # 启动命令（Railway 会自动注入 PORT 环境变量）
-# 使用启动脚本确保环境变量正确解析
-CMD ["bash", "start.sh"]
+# 优先使用 Python 启动脚本，避免 bash 解析问题
+CMD ["python", "start.py"]
 
