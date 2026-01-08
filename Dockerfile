@@ -46,6 +46,7 @@ ENV PORT=8001
 RUN chmod +x start.sh start.py
 
 # 启动命令（Railway 会自动注入 PORT 环境变量）
+# 使用 shell 形式确保环境变量被正确解析
 # 优先使用 Python 启动脚本，避免 bash 解析问题
-CMD ["python", "start.py"]
+CMD python start.py
 
