@@ -4,10 +4,10 @@
  */
 
 // 导入背景图片
-import askdataBg from '../pages/assets/askdata-bg.png'
-import smartreportBg from '../pages/assets/smartreport-bg.png'
-import smartorderBg from '../pages/assets/smartorder-bg.png'
-import smartplanBg from '../pages/assets/smartplan-bg.png'
+import askdataBg from '../pages/assets/askdata-bg.webp'
+import smartreportBg from '../pages/assets/smartreport-bg.webp'
+import smartorderBg from '../pages/assets/smartorder-bg.webp'
+import smartplanBg from '../pages/assets/smartplan-bg.webp'
 
 export interface ToolMetadata {
   /** 工具唯一标识（用于路由路径） */

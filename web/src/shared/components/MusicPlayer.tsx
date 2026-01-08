@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import playMusicIcon from '../../tools/askdata/assets/playmusic.svg'
+import playMusicIcon from '../../tools/askdata/assets/playmusic.webp'
 import springFlowers from '../../tools/askdata/assets/Spring Flowers.mp3'
 import concerto from '../../tools/askdata/assets/Concerto.mp3'
 import sunsetLandscape from '../../tools/askdata/assets/Sunset Landscape.mp3'

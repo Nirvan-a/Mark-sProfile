@@ -17,7 +17,7 @@ import {
 } from './api'
 import { formatDuration } from '../../shared/utils/format'
 import { MusicPlayer, PromptEditorTrigger, HomeButton } from '../../shared/components'
-import characterImg from '../askdata/assets/character.png'
+import characterImg from '../askdata/assets/character.webp'
 import repoIcon from './assets/repo-icon.svg'
 import './SmartReport.css'
 import type { ProcessSection } from './components/ProcessTimeline'

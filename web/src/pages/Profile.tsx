@@ -6,7 +6,7 @@ import { Mail, Phone, Check, ChevronLeft, ChevronRight } from 'lucide-react'
 import './Profile.css'
 
 // ========== 资源文件导入 ==========
-import avatarImg from './assets/avatar.png'
+import avatarImg from './assets/avatar.webp'
 import wechatIconImg from './assets/wechat-icon.png'
 
 export default function Profile() {

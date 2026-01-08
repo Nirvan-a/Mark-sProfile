@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import editIcon from '../../tools/askdata/assets/Edit2.svg'
+import editIcon from '../../tools/askdata/assets/Edit2.webp'
 import './PromptEditorTrigger.css'
 
 interface PromptEditorTriggerProps {

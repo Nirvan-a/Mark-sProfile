@@ -9,7 +9,7 @@ import { PhoneFrame } from './components/PhoneFrame'
 import { HomeButton } from '../../shared/components'
 import type { PageType, Order, ProductRecommendation, InputMode, ItemAttributes } from './types'
 // 导入本地图片资源
-import aiAvatarImg from './assets/ui/ai-avatar.png'
+import aiAvatarImg from './assets/ui/ai-avatar.webp'
 import {
   callDashscope,
   extractAssistantContent,
