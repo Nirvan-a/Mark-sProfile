@@ -39,6 +39,7 @@ COPY server/ .
 # 暴露端口（平台会自动设置 PORT 环境变量）
 EXPOSE 8001
 
-# 启动命令（使用环境变量 PORT，如果没有则使用 8001）
-CMD uvicorn app:app --host 0.0.0.0 --port ${PORT:-8001}
+# 启动命令（Railway 会自动注入 PORT 环境变量）
+# 使用 shell 格式确保环境变量正确解析
+CMD sh -c "uvicorn app:app --host 0.0.0.0 --port \${PORT:-8001}"
 
