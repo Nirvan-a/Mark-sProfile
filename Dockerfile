@@ -36,13 +36,13 @@ RUN python -m playwright install chromium --with-deps || python -m playwright in
 # 复制应用代码
 COPY server/ .
 
-# 确保启动脚本有执行权限
-RUN chmod +x /app/start.sh
-
 # 暴露端口（平台会自动设置 PORT 环境变量）
 EXPOSE 8001
 
-# 启动命令（使用 JSON 格式，符合 Railway 建议）
-# 通过 sh -c 执行启动脚本以正确处理环境变量
-CMD ["sh", "-c", "uvicorn app:app --host 0.0.0.0 --port ${PORT:-8001}"]
+# 确保启动脚本可执行
+RUN chmod +x start.sh
+
+# 启动命令（Railway 会自动注入 PORT 环境变量）
+# 使用启动脚本确保环境变量正确解析
+CMD ["bash", "start.sh"]
 
