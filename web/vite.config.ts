@@ -36,6 +36,9 @@ export default defineConfig({
         },
         // 优化资源文件名
         assetFileNames: (assetInfo) => {
+          if (!assetInfo.name) {
+            return `assets/[name]-[hash][extname]`
+          }
           const info = assetInfo.name.split('.')
           const ext = info[info.length - 1]
           if (/png|jpe?g|svg|gif|tiff|bmp|ico/i.test(ext)) {
@@ -45,13 +48,8 @@ export default defineConfig({
         },
       },
     },
-    // 启用压缩
-    minify: 'terser',
-    terserOptions: {
-      compress: {
-        drop_console: false, // 保留 console，方便调试
-      },
-    },
+    // 启用压缩（使用 esbuild，更快且默认配置已足够）
+    minify: 'esbuild',
     // 增加 chunk 大小警告阈值（因为图片较大）
     chunkSizeWarningLimit: 2000,
   },
