@@ -6,13 +6,6 @@ set -e
 
 echo "🎭 开始安装 Playwright 浏览器..."
 
-# 检查是否在 Render 平台
-if [ -d "/opt/render" ]; then
-    echo "📍 检测到 Render 平台环境"
-    export PLAYWRIGHT_BROWSERS_PATH=/opt/render/.cache/ms-playwright
-    mkdir -p "$PLAYWRIGHT_BROWSERS_PATH"
-fi
-
 # 安装系统依赖（Playwright 需要）
 echo "📦 安装系统依赖..."
 apt-get update || true

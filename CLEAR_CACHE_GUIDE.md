@@ -1,5 +1,7 @@
 # 🧹 清理缓存并重新部署指南
 
+本指南用于清理 Cloudflare Pages 的构建缓存并重新部署前端。
+
 ## ✅ 已完成的操作
 
 1. ✅ 清理了本地构建缓存（`web/dist`, `node_modules/.vite`）
@@ -56,50 +58,10 @@ curl -X POST "https://api.cloudflare.com/client/v4/accounts/{account_id}/pages/p
   -H "Content-Type: application/json"
 ```
 
-## ⚙️ Render 缓存清理
-
-### 方法 1: 通过 Dashboard（推荐）
-
-1. **访问 Render Dashboard**
-   - 打开 https://dashboard.render.com
-   - 登录你的账户
-
-2. **进入你的服务**
-   - 找到你的后端服务（例如：`profile-page-api`）
-   - 点击进入服务详情页
-
-3. **清除构建缓存并重新部署**
-   
-   **选项 A: 清除缓存并手动部署**
-   - 点击 "Settings" 标签
-   - 滚动到底部找到 "Clear build cache" 按钮
-   - 点击清除缓存
-   - 然后点击 "Manual Deploy" → "Deploy latest commit"
-
-   **选项 B: 直接手动部署（会自动清除缓存）**
-   - 点击 "Manual Deploy" 按钮
-   - 选择 "Clear build cache & deploy"
-   - 点击 "Deploy"
-
-4. **等待部署完成**
-   - 可以在 "Events" 标签查看部署日志
-   - 通常需要 3-8 分钟
-
-### 方法 2: 通过 Render API
-
-```bash
-# 需要 Render API Key
-curl -X POST "https://api.render.com/v1/services/{service_id}/deploys" \
-  -H "Authorization: Bearer {api_key}" \
-  -H "Content-Type: application/json" \
-  -d '{"clearCache": true}'
-```
-
 ## 🔍 验证步骤
 
 ### 1. 等待部署完成
 - Cloudflare Pages: 通常 2-5 分钟
-- Render: 通常 3-8 分钟
 
 ### 2. 清除浏览器缓存
 

@@ -1,5 +1,5 @@
 # Dockerfile for containerized deployment
-# 适用于 Fly.io, Railway, Render 等支持 Docker 的平台
+# 适用于 Railway 等支持 Docker 的平台
 
 FROM python:3.11-slim
 

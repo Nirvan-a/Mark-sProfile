@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # 清理缓存并重新部署脚本
-# 用于清理 Cloudflare 和 Render 的构建缓存
+# 用于清理 Cloudflare Pages 的构建缓存
 
 set -e
 
@@ -17,7 +17,7 @@ echo -e "${BLUE}╚════════════════════�
 echo ""
 
 # 1. 清理本地构建缓存
-echo -e "${YELLOW}[1/4] 清理本地构建缓存...${NC}"
+echo -e "${YELLOW}[1/3] 清理本地构建缓存...${NC}"
 cd "$(dirname "$0")"
 cd web
 rm -rf dist node_modules/.vite .vite
@@ -25,13 +25,13 @@ echo -e "${GREEN}✅ 本地缓存已清理${NC}"
 echo ""
 
 # 2. 重新构建
-echo -e "${YELLOW}[2/4] 重新构建前端...${NC}"
+echo -e "${YELLOW}[2/3] 重新构建前端...${NC}"
 npm run build
 echo -e "${GREEN}✅ 前端构建完成${NC}"
 echo ""
 
 # 3. 提交并推送代码
-echo -e "${YELLOW}[3/4] 提交并推送代码...${NC}"
+echo -e "${YELLOW}[3/3] 提交并推送代码...${NC}"
 cd ..
 if [ -n "$(git status --porcelain)" ]; then
     git add .
@@ -44,7 +44,7 @@ fi
 echo ""
 
 # 4. 部署选项
-echo -e "${YELLOW}[4/4] 部署选项${NC}"
+echo -e "${YELLOW}部署选项${NC}"
 echo ""
 echo "=========================================="
 echo "🌐 Cloudflare Pages 缓存清理"
@@ -76,20 +76,6 @@ else
 fi
 echo ""
 
-echo "=========================================="
-echo "⚙️  Render 缓存清理"
-echo "=========================================="
-echo ""
-echo "方法 1: 通过 Render Dashboard"
-echo "1. 访问 https://dashboard.render.com"
-echo "2. 进入你的服务"
-echo "3. 点击 'Manual Deploy' → 'Clear build cache & deploy'"
-echo "   或者"
-echo "4. 点击 'Settings' → 滚动到底部 → 'Clear build cache'"
-echo ""
-echo "方法 2: 通过 Render API (需要 API Key)"
-echo "使用 Render API 清除缓存并触发重新部署"
-echo ""
 echo "=========================================="
 echo "🔍 验证步骤"
 echo "=========================================="
