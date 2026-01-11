@@ -157,7 +157,7 @@ class TemporaryKnowledgeBase:
             k: 返回结果数量
         
         Returns:
-            检索结果列表
+            检索结果列表（如果发生错误，返回空列表而不是抛出异常）
         """
         if not self.vector_store:
             return []
@@ -181,7 +181,12 @@ class TemporaryKnowledgeBase:
             
             return results
         except Exception as e:
-            raise TemporaryKnowledgeBaseError(f"临时知识库检索失败: {e}") from e
+            # 捕获错误，记录日志，返回空列表以继续后续流程
+            # 这样可以避免因为临时知识库检索失败导致整个流程中断
+            error_msg = f"临时知识库检索失败 (task_id={self.task_id}, query={query[:50]}): {e}"
+            print(f"⚠️  {error_msg}")
+            # 返回空列表，相当于检索到0个结果，程序会继续执行后续流程
+            return []
     
     def get_count(self) -> int:
         """获取临时知识库中的文档数量"""
