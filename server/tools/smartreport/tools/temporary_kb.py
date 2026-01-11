@@ -137,16 +137,24 @@ class TemporaryKnowledgeBase:
         if not splits:
             return
         
-        # 添加到向量存储
-        if self.vector_store is None:
-            self.vector_store = FAISS.from_documents(splits, self.embeddings)
-            print(f"创建临时知识库: {self.task_id}，添加 {len(splits)} 个文档片段（来自 {len(documents)} 个原始结果）")
-        else:
-            self.vector_store.add_documents(splits)
-            print(f"临时知识库 {self.task_id} 添加 {len(splits)} 个文档片段（来自 {len(documents)} 个原始结果）")
-        
-        # 保存向量存储
-        self._save_vector_store()
+        # 添加到向量存储（添加容错处理）
+        try:
+            if self.vector_store is None:
+                self.vector_store = FAISS.from_documents(splits, self.embeddings)
+                print(f"创建临时知识库: {self.task_id}，添加 {len(splits)} 个文档片段（来自 {len(documents)} 个原始结果）")
+            else:
+                self.vector_store.add_documents(splits)
+                print(f"临时知识库 {self.task_id} 添加 {len(splits)} 个文档片段（来自 {len(documents)} 个原始结果）")
+            
+            # 保存向量存储
+            self._save_vector_store()
+        except Exception as e:
+            # 捕获错误，记录日志，但继续执行（不阻止工作流）
+            # 这样可以避免因为临时知识库添加失败导致整个流程中断
+            error_msg = f"临时知识库添加失败 (task_id={self.task_id}, docs_count={len(documents)}): {e}"
+            print(f"⚠️  {error_msg}")
+            # 不抛出异常，允许程序继续执行
+            # 即使无法添加到临时知识库，检索到的结果仍然可以使用
     
     def search(self, query: str, k: int = 5) -> List[Dict[str, Any]]:
         """
