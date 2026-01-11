@@ -102,59 +102,66 @@ class TemporaryKnowledgeBase:
                 - url: URL（可选）
                 - source: 来源（可选）
         """
-        if not results:
-            return
-        
-        # 转换为 Document 对象
-        documents = []
-        for result in results:
-            content = result.get("content", "")
-            if not content:
-                continue
-            
-            metadata = {
-                "source": result.get("source", "unknown"),
-                "title": result.get("title", ""),
-                "url": result.get("url", ""),
-                "task_id": self.task_id,
-            }
-            
-            doc = Document(page_content=content, metadata=metadata)
-            documents.append(doc)
-        
-        if not documents:
-            return
-        
-        # 文本分割：如果内容过长，需要分割以避免超出嵌入模型的输入限制
-        # 使用与主知识库相同的分割参数（chunk_size=1000, overlap=200）
-        text_splitter = RecursiveCharacterTextSplitter(
-            chunk_size=1000,
-            chunk_overlap=200,
-            length_function=len,
-        )
-        splits = text_splitter.split_documents(documents)
-        
-        if not splits:
-            return
-        
-        # 添加到向量存储（添加容错处理）
-        try:
-            if self.vector_store is None:
-                self.vector_store = FAISS.from_documents(splits, self.embeddings)
-                print(f"创建临时知识库: {self.task_id}，添加 {len(splits)} 个文档片段（来自 {len(documents)} 个原始结果）")
-            else:
-                self.vector_store.add_documents(splits)
-                print(f"临时知识库 {self.task_id} 添加 {len(splits)} 个文档片段（来自 {len(documents)} 个原始结果）")
-            
-            # 保存向量存储
-            self._save_vector_store()
-        except Exception as e:
-            # 捕获错误，记录日志，但继续执行（不阻止工作流）
-            # 这样可以避免因为临时知识库添加失败导致整个流程中断
-            error_msg = f"临时知识库添加失败 (task_id={self.task_id}, docs_count={len(documents)}): {e}"
-            print(f"⚠️  {error_msg}")
-            # 不抛出异常，允许程序继续执行
-            # 即使无法添加到临时知识库，检索到的结果仍然可以使用
+        # ===== 临时跳过：暂时禁用添加到临时知识库功能 =====
+        # 原因：避免 SSL 错误等临时问题影响工作流
+        # 恢复方法：删除此段注释和 return 语句，取消下方代码的注释
+        # ===================================================
+        print(f"⚠️  [临时跳过] 临时知识库添加功能已禁用，跳过 {len(results) if results else 0} 条结果")
+        return
+        # ===== 以下为原始代码，已暂时注释，方便后续恢复 =====
+        # if not results:
+        #     return
+        # 
+        # # 转换为 Document 对象
+        # documents = []
+        # for result in results:
+        #     content = result.get("content", "")
+        #     if not content:
+        #         continue
+        #     
+        #     metadata = {
+        #         "source": result.get("source", "unknown"),
+        #         "title": result.get("title", ""),
+        #         "url": result.get("url", ""),
+        #         "task_id": self.task_id,
+        #     }
+        #     
+        #     doc = Document(page_content=content, metadata=metadata)
+        #     documents.append(doc)
+        # 
+        # if not documents:
+        #     return
+        # 
+        # # 文本分割：如果内容过长，需要分割以避免超出嵌入模型的输入限制
+        # # 使用与主知识库相同的分割参数（chunk_size=1000, overlap=200）
+        # text_splitter = RecursiveCharacterTextSplitter(
+        #     chunk_size=1000,
+        #     chunk_overlap=200,
+        #     length_function=len,
+        # )
+        # splits = text_splitter.split_documents(documents)
+        # 
+        # if not splits:
+        #     return
+        # 
+        # # 添加到向量存储（添加容错处理）
+        # try:
+        #     if self.vector_store is None:
+        #         self.vector_store = FAISS.from_documents(splits, self.embeddings)
+        #         print(f"创建临时知识库: {self.task_id}，添加 {len(splits)} 个文档片段（来自 {len(documents)} 个原始结果）")
+        #     else:
+        #         self.vector_store.add_documents(splits)
+        #         print(f"临时知识库 {self.task_id} 添加 {len(splits)} 个文档片段（来自 {len(documents)} 个原始结果）")
+        #     
+        #     # 保存向量存储
+        #     self._save_vector_store()
+        # except Exception as e:
+        #     # 捕获错误，记录日志，但继续执行（不阻止工作流）
+        #     # 这样可以避免因为临时知识库添加失败导致整个流程中断
+        #     error_msg = f"临时知识库添加失败 (task_id={self.task_id}, docs_count={len(documents)}): {e}"
+        #     print(f"⚠️  {error_msg}")
+        #     # 不抛出异常，允许程序继续执行
+        #     # 即使无法添加到临时知识库，检索到的结果仍然可以使用
     
     def search(self, query: str, k: int = 5) -> List[Dict[str, Any]]:
         """
@@ -167,34 +174,41 @@ class TemporaryKnowledgeBase:
         Returns:
             检索结果列表（如果发生错误，返回空列表而不是抛出异常）
         """
-        if not self.vector_store:
-            return []
-        
-        try:
-            docs_with_scores = self.vector_store.similarity_search_with_score(query, k=k)
-            
-            results = []
-            for doc, score in docs_with_scores:
-                # 将距离转换为相关性分数
-                relevance = max(0, 1.0 - score / 2.0)
-                
-                results.append({
-                    "content": doc.page_content,
-                    "title": doc.metadata.get("title", ""),
-                    "url": doc.metadata.get("url", ""),
-                    "source": doc.metadata.get("source", "临时知识库"),
-                    "relevance": round(relevance, 3),
-                    "score": round(float(score), 4),
-                })
-            
-            return results
-        except Exception as e:
-            # 捕获错误，记录日志，返回空列表以继续后续流程
-            # 这样可以避免因为临时知识库检索失败导致整个流程中断
-            error_msg = f"临时知识库检索失败 (task_id={self.task_id}, query={query[:50]}): {e}"
-            print(f"⚠️  {error_msg}")
-            # 返回空列表，相当于检索到0个结果，程序会继续执行后续流程
-            return []
+        # ===== 临时跳过：暂时禁用从临时知识库检索功能 =====
+        # 原因：避免 SSL 错误等临时问题影响工作流
+        # 恢复方法：删除此段注释和 return 语句，取消下方代码的注释
+        # ===================================================
+        print(f"⚠️  [临时跳过] 临时知识库检索功能已禁用，查询: {query[:50] if query else ''}")
+        return []
+        # ===== 以下为原始代码，已暂时注释，方便后续恢复 =====
+        # if not self.vector_store:
+        #     return []
+        # 
+        # try:
+        #     docs_with_scores = self.vector_store.similarity_search_with_score(query, k=k)
+        #     
+        #     results = []
+        #     for doc, score in docs_with_scores:
+        #         # 将距离转换为相关性分数
+        #         relevance = max(0, 1.0 - score / 2.0)
+        #         
+        #         results.append({
+        #             "content": doc.page_content,
+        #             "title": doc.metadata.get("title", ""),
+        #             "url": doc.metadata.get("url", ""),
+        #             "source": doc.metadata.get("source", "临时知识库"),
+        #             "relevance": round(relevance, 3),
+        #             "score": round(float(score), 4),
+        #         })
+        #     
+        #     return results
+        # except Exception as e:
+        #     # 捕获错误，记录日志，返回空列表以继续后续流程
+        #     # 这样可以避免因为临时知识库检索失败导致整个流程中断
+        #     error_msg = f"临时知识库检索失败 (task_id={self.task_id}, query={query[:50]}): {e}"
+        #     print(f"⚠️  {error_msg}")
+        #     # 返回空列表，相当于检索到0个结果，程序会继续执行后续流程
+        #     return []
     
     def get_count(self) -> int:
         """获取临时知识库中的文档数量"""
