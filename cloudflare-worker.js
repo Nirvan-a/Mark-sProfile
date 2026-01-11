@@ -6,7 +6,7 @@
  * 1. 在 Cloudflare Dashboard 进入 Workers & Pages
  * 2. 创建新的 Worker
  * 3. 粘贴此代码
- * 4. 配置环境变量 BACKEND_URL（你的 Railway 后端地址）
+ * 4. 配置环境变量 BACKEND_URL（你的后端服务地址）
  * 5. 配置路由：yourdomain.com/api/* → Worker
  */
 
@@ -18,7 +18,7 @@ export default {
     if (url.pathname.startsWith('/api')) {
       // 从环境变量获取后端地址，如果没有则使用默认值
       // 部署时需要在 Cloudflare Worker 设置中添加环境变量
-      const backendUrl = env.BACKEND_URL || 'https://your-app.railway.app'
+      const backendUrl = env.BACKEND_URL || 'https://your-backend-url.com'
       
       // 构建目标 URL
       const targetUrl = `${backendUrl}${url.pathname}${url.search}`

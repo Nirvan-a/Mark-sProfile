@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-启动脚本 - 用于 Railway 等平台
+启动脚本 - 用于容器化部署平台
 在 Python 中处理 PORT 环境变量，避免 bash 解析问题
 """
 import os
