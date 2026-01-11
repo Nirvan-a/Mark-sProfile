@@ -52,7 +52,7 @@ ENV PORT=8001
 RUN chmod +x start.sh start.py
 
 # 启动命令
-# 使用 shell 形式确保环境变量被正确解析
-# 优先使用 Python 启动脚本，避免 bash 解析问题
-CMD python start.py
+# 使用 JSON 格式（exec 形式）以获得更好的信号处理
+# start.py 脚本使用 os.environ.get() 读取环境变量，不需要 shell 展开
+CMD ["python", "start.py"]
 
