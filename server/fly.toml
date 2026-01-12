@@ -1,0 +1,30 @@
+# Fly.io 应用配置文件
+# 部署命令: flyctl deploy
+
+app = "profile-page-api"  # 应用名称，部署时会自动创建或使用现有应用
+primary_region = "nrt"  # 东京区域（离中国较近），可选: hkg(香港), nrt(东京), sin(新加坡)
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  PORT = "8001"
+
+[http_service]
+  internal_port = 8001
+  force_https = true
+  auto_stop_machines = false  # 关键：禁用自动停止，避免冷启动
+  auto_start_machines = true
+  min_machines_running = 1  # 始终保持至少1个实例运行
+  processes = ["app"]
+
+  [[http_service.checks]]
+    interval = "10s"
+    timeout = "2s"
+    grace_period = "5s"
+    method = "GET"
+    path = "/api/health"
+
+# 资源配置（免费额度内）
+# 注意：首次部署后，可以通过 flyctl scale vm 命令调整
+# 示例: flyctl scale vm shared-cpu-1x --memory 256

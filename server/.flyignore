@@ -1,0 +1,53 @@
+# Fly.io 忽略文件
+# 类似于 .gitignore，用于优化部署上传
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+*.egg
+
+# 虚拟环境
+venv/
+env/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 环境变量（敏感信息）
+.env
+.env.local
+
+# 日志
+*.log
+
+# 测试
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Git
+.git/
+.gitignore
+
+# 文档
+*.md
+README.md
+DEPLOY.md
+
+# 临时文件
+*.tmp
+*.temp
+
+# 图表和文档资源（运行时生成）
+resources/static/charts/
+resources/documents/
