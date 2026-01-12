@@ -25,6 +25,9 @@ primary_region = "nrt"  # 东京区域（离中国较近），可选: hkg(香港
     method = "GET"
     path = "/api/health"
 
-# 资源配置（免费额度内）
-# 注意：首次部署后，可以通过 flyctl scale vm 命令调整
-# 示例: flyctl scale vm shared-cpu-1x --memory 256
+# 资源配置
+# 当前配置：1 个实例，768MB 内存
+# 注意：首次部署后，可以通过 flyctl scale 命令调整
+# 示例: 
+#   flyctl scale count 1 --app profile-page-api  # 设置实例数量
+#   flyctl scale memory 768 --app profile-page-api  # 设置内存大小
