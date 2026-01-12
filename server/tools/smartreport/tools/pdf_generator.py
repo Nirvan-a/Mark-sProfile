@@ -53,6 +53,12 @@ class PDFGenerator:
                     '--no-first-run',
                     '--no-zygote',
                     '--disable-gpu',
+                    # 优化服务器环境性能的参数
+                    '--disable-background-timer-throttling',
+                    '--disable-backgrounding-occluded-windows',
+                    '--disable-renderer-backgrounding',
+                    '--disable-features=TranslateUI',
+                    '--disable-ipc-flooding-protection',
                 ]
             )
         except Exception as e:
@@ -82,7 +88,7 @@ class PDFGenerator:
         output_path: Optional[str] = None,
         base_url: Optional[str] = None,
         wait_for_images: bool = True,
-        timeout: int = 30000,  # 30秒超时
+        timeout: int = 60000,  # 60秒超时（服务器环境下需要更多时间）
     ) -> bytes:
         """
         生成 PDF
@@ -181,7 +187,7 @@ class PDFGenerator:
         title: str = "报告",
         output_path: Optional[str] = None,
         base_url: Optional[str] = None,
-        timeout: int = 30000,  # 30秒超时
+        timeout: int = 60000,  # 60秒超时（服务器环境下需要更多时间）
     ) -> bytes:
         """
         从 Markdown 内容生成 PDF
@@ -455,8 +461,8 @@ class PDFGenerator:
 async def generate_pdf_from_markdown(
     markdown_content: str,
     title: str = "报告",
-    base_url: Optional[str] = None,
-    timeout: int = 30000,  # 30秒超时
+        base_url: Optional[str] = None,
+        timeout: int = 60000,  # 60秒超时（服务器环境下需要更多时间）
 ) -> bytes:
     """
     便捷函数：从 Markdown 生成 PDF（异步版本）

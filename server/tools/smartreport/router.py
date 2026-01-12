@@ -399,20 +399,20 @@ async def generate_pdf(payload: GeneratePDFRequest):
         
         print(f"📄 [PDF API] 收到PDF生成请求: title='{payload.title}', base_url='{base_url}'")
         
-        # 使用 asyncio.wait_for 添加整体超时（60秒）
+        # 使用 asyncio.wait_for 添加整体超时（120秒，服务器环境下Playwright启动较慢）
         try:
             pdf_bytes = await asyncio.wait_for(
                 generate_pdf_from_markdown(
                     markdown_content=payload.content,
                     title=payload.title,
                     base_url=base_url,
-                    timeout=30000,  # 30秒
+                    timeout=60000,  # 60秒（服务器环境下需要更多时间）
                 ),
-                timeout=60.0  # 整体超时60秒
+                timeout=120.0  # 整体超时120秒（2分钟）
             )
             print(f"✅ [PDF API] PDF 生成成功，大小: {len(pdf_bytes)} bytes")
         except asyncio.TimeoutError:
-            print("❌ [PDF API] PDF 生成超时（超过60秒）")
+            print("❌ [PDF API] PDF 生成超时（超过120秒）")
             raise HTTPException(status_code=504, detail="PDF 生成超时，请稍后重试或联系管理员")
         except Exception as e:
             print(f"❌ [PDF API] PDF 生成过程中出错: {str(e)}")

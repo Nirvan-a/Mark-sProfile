@@ -45,5 +45,5 @@ COPY . .
 # 暴露端口（Fly.io 会自动映射）
 EXPOSE 8001
 
-# 启动命令
-CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8001"]
+# 启动命令（增加超时配置以支持长时间运行的PDF生成请求）
+CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8001", "--timeout-keep-alive", "120"]

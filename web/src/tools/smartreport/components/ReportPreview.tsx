@@ -92,9 +92,9 @@ export function ReportPreview({
       `
       document.body.appendChild(loadingMsg)
       
-      // 调用后端 API 生成 PDF（设置超时：70秒）
+      // 调用后端 API 生成 PDF（设置超时：130秒，服务器环境下需要更长时间）
       const controller = new AbortController()
-      const timeoutId = setTimeout(() => controller.abort(), 70000) // 70秒超时
+      const timeoutId = setTimeout(() => controller.abort(), 130000) // 130秒超时（2分10秒）
       
       let response: Response
       try {

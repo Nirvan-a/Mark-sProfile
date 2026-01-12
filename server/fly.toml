@@ -17,6 +17,7 @@ primary_region = "nrt"  # 东京区域（离中国较近），可选: hkg(香港
   auto_start_machines = true
   min_machines_running = 1  # 始终保持至少1个实例运行
   processes = ["app"]
+  # 注意：Fly.io HTTP超时默认约60秒，长时间请求需要通过异步任务或增加内存来解决
 
   [[http_service.checks]]
     interval = "10s"
