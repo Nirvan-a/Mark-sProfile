@@ -5,6 +5,7 @@ Deep Research API
 import json
 import queue
 import threading
+import time
 from typing import Dict, Any, Optional, AsyncIterator
 from uuid import uuid4
 
@@ -242,7 +243,6 @@ class DeepResearchAPI:
                     local_config["recursion_limit"] = 100
                 
                 # 使用 stream 方法获取实时更新
-                import time
                 print(f"[DEBUG] run_workflow_thread: 开始 stream，时间: {time.strftime('%H:%M:%S')}")
                 stream_iter = self.workflow.stream(initial_state, config=local_config)
                 print(f"[DEBUG] run_workflow_thread: stream 迭代器已创建")
