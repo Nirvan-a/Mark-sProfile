@@ -145,6 +145,7 @@ class PDFGenerator:
             
             print("📄 [PDF生成] 开始生成 PDF...")
             # 生成 PDF
+            # 注意：page.pdf() 不支持 timeout 参数，超时由页面级别的超时设置控制
             pdf_bytes = await page.pdf(
                 format="A4",
                 margin={
@@ -155,7 +156,6 @@ class PDFGenerator:
                 },
                 print_background=True,  # 包含背景色和图片
                 prefer_css_page_size=False,
-                timeout=timeout,  # 设置 PDF 生成超时
             )
             print(f"✅ [PDF生成] PDF 生成完成，大小: {len(pdf_bytes)} bytes")
             
