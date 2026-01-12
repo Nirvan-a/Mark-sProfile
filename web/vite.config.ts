@@ -13,7 +13,6 @@ export default defineConfig({
     port: 5173,
     strictPort: false,
     allowedHosts: [
-      'profile.mazhaofeng.com',
       'localhost',
       '127.0.0.1',
     ],

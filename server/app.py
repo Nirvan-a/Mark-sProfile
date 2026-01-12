@@ -103,14 +103,12 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
     )
 
 # CORS 配置
-# 支持开发环境和生产环境
+# 开发环境配置
 cors_origins = [
     "http://localhost:5173",  # 本地开发
-    "https://profile.mazhaofeng.com",  # 自定义域名
 ]
 
-# 从环境变量读取额外的允许来源（用于 Cloudflare Pages 等）
-# 格式：CORS_ORIGINS=https://your-frontend.pages.dev,https://your-custom-domain.com
+# 从环境变量读取额外的允许来源
 additional_origins = os.getenv("CORS_ORIGINS", "").split(",")
 cors_origins.extend([origin.strip() for origin in additional_origins if origin.strip()])
 
@@ -127,7 +125,7 @@ app.add_middleware(
     allow_credentials=True,
 )
 
-# 根路径健康检查（Render 健康检查使用）
+# 根路径健康检查
 @app.get("/")
 def root():
     """根路径健康检查"""
