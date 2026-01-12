@@ -243,9 +243,17 @@ class DeepResearchAPI:
                 
                 # 使用 stream 方法获取实时更新
                 import time
-                for event in self.workflow.stream(initial_state, config=local_config):
+                print(f"[DEBUG] run_workflow_thread: 开始 stream，时间: {time.strftime('%H:%M:%S')}")
+                stream_iter = self.workflow.stream(initial_state, config=local_config)
+                print(f"[DEBUG] run_workflow_thread: stream 迭代器已创建")
+                
+                event_count = 0
+                for event in stream_iter:
+                    event_count += 1
+                    print(f"[DEBUG] run_workflow_thread: 收到事件 #{event_count}，时间: {time.strftime('%H:%M:%S')}")
                     # event 格式: {node_name: state}
                     for node_name, state in event.items():
+                        print(f"[DEBUG] run_workflow_thread: 处理节点 '{node_name}'，时间: {time.strftime('%H:%M:%S')}")
                         # 保存最后一个 state
                         last_state = state
                         
@@ -272,37 +280,60 @@ class DeepResearchAPI:
                         }
                         
                         # 将节点事件放入队列
-                        progress_queue.put({
-                            "type": "node_start",
-                            "node": node_name,
-                            "task_id": state.get("task_id"),
-                            "timestamp": int(time.time() * 1000),
-                            "state": serializable_state,
-                        })
+                        print(f"[DEBUG] run_workflow_thread: 准备将节点 '{node_name}' 的事件放入队列")
                         
-                        progress_queue.put({
-                            "type": "state_update",
-                            "node": node_name,
-                            "timestamp": int(time.time() * 1000),
-                            "state": serializable_state,
-                        })
+                        try:
+                            progress_queue.put({
+                                "type": "node_start",
+                                "node": node_name,
+                                "task_id": state.get("task_id"),
+                                "timestamp": int(time.time() * 1000),
+                                "state": serializable_state,
+                            })
+                            print(f"[DEBUG] run_workflow_thread: node_start 事件已放入队列（节点: {node_name}）")
+                        except Exception as e:
+                            print(f"[ERROR] run_workflow_thread: 放入 node_start 事件失败: {e}")
                         
-                        progress_queue.put({
-                            "type": "node_end",
-                            "node": node_name,
-                            "timestamp": int(time.time() * 1000),
-                            "state": serializable_state,
-                        })
+                        try:
+                            progress_queue.put({
+                                "type": "state_update",
+                                "node": node_name,
+                                "timestamp": int(time.time() * 1000),
+                                "state": serializable_state,
+                            })
+                            print(f"[DEBUG] run_workflow_thread: state_update 事件已放入队列（节点: {node_name}）")
+                        except Exception as e:
+                            print(f"[ERROR] run_workflow_thread: 放入 state_update 事件失败: {e}")
+                        
+                        try:
+                            progress_queue.put({
+                                "type": "node_end",
+                                "node": node_name,
+                                "timestamp": int(time.time() * 1000),
+                                "state": serializable_state,
+                            })
+                            print(f"[DEBUG] run_workflow_thread: node_end 事件已放入队列（节点: {node_name}）")
+                        except Exception as e:
+                            print(f"[ERROR] run_workflow_thread: 放入 node_end 事件失败: {e}")
                 
                 # 发送完成事件
-                progress_queue.put({
-                    "type": "complete",
-                    "task_id": task_id,
-                })
+                print(f"[DEBUG] run_workflow_thread: stream 完成，准备发送 complete 事件，时间: {time.strftime('%H:%M:%S')}")
+                try:
+                    progress_queue.put({
+                        "type": "complete",
+                        "task_id": task_id,
+                    })
+                    print(f"[DEBUG] run_workflow_thread: complete 事件已放入队列")
+                except Exception as e:
+                    print(f"[ERROR] run_workflow_thread: 放入 complete 事件失败: {e}")
                 
             except Exception as e:
+                print(f"[ERROR] run_workflow_thread: 工作流执行异常: {str(e)}")
+                import traceback
+                print(f"[ERROR] run_workflow_thread: 异常堆栈:\n{traceback.format_exc()}")
                 workflow_error = e
             finally:
+                print(f"[DEBUG] run_workflow_thread: 工作流线程结束，时间: {time.strftime('%H:%M:%S')}")
                 workflow_finished.set()
                 # 注销回调
                 progress_manager.unregister_callback(task_id)
@@ -312,23 +343,59 @@ class DeepResearchAPI:
         workflow_thread.start()
         
         # 从队列中读取事件并发送到前端
+        print(f"[DEBUG] stream_workflow: 开始从队列读取事件，时间: {time.strftime('%H:%M:%S')}")
+        event_sent_count = 0
+        empty_count = 0
         try:
             while not workflow_finished.is_set() or not progress_queue.empty():
                 try:
                     # 设置超时，避免死锁
                     event_data = progress_queue.get(timeout=0.1)
+                    event_sent_count += 1
+                    empty_count = 0
+                    event_type = event_data.get("type", "unknown")
+                    node_name = event_data.get("node", "unknown")
+                    print(f"[DEBUG] stream_workflow: 从队列获取事件 #{event_sent_count}，类型: {event_type}，节点: {node_name}，时间: {time.strftime('%H:%M:%S')}")
                     
                     # 发送事件到前端（所有事件都有 type 字段）
-                    yield json.dumps(event_data, ensure_ascii=False) + "\n"
+                    event_json = json.dumps(event_data, ensure_ascii=False) + "\n"
+                    print(f"[DEBUG] stream_workflow: 准备 yield 事件，JSON 长度: {len(event_json)} 字符")
+                    yield event_json
+                    print(f"[DEBUG] stream_workflow: 事件已 yield，时间: {time.strftime('%H:%M:%S')}")
                         
                 except queue.Empty:
+                    empty_count += 1
+                    if empty_count % 100 == 0:  # 每10秒打印一次（100 * 0.1秒）
+                        print(f"[DEBUG] stream_workflow: 队列为空（连续 {empty_count} 次），工作流完成状态: {workflow_finished.is_set()}，队列是否为空: {progress_queue.empty()}")
                     continue
+            
+            print(f"[DEBUG] stream_workflow: 主循环结束，已发送 {event_sent_count} 个事件，时间: {time.strftime('%H:%M:%S')}")
+            print(f"[DEBUG] stream_workflow: 等待工作流线程结束...")
             
             # 等待工作流线程结束
             workflow_thread.join(timeout=1.0)
+            print(f"[DEBUG] stream_workflow: 工作流线程 join 完成，时间: {time.strftime('%H:%M:%S')}")
+            
+            # 检查队列中是否还有剩余事件
+            remaining_events = []
+            while not progress_queue.empty():
+                try:
+                    event_data = progress_queue.get_nowait()
+                    remaining_events.append(event_data)
+                except queue.Empty:
+                    break
+            
+            if remaining_events:
+                print(f"[DEBUG] stream_workflow: 队列中还有 {len(remaining_events)} 个剩余事件，准备发送...")
+                for event_data in remaining_events:
+                    event_type = event_data.get("type", "unknown")
+                    node_name = event_data.get("node", "unknown")
+                    print(f"[DEBUG] stream_workflow: 发送剩余事件，类型: {event_type}，节点: {node_name}")
+                    yield json.dumps(event_data, ensure_ascii=False) + "\n"
             
             # 如果有错误，抛出
             if workflow_error:
+                print(f"[ERROR] stream_workflow: 工作流错误: {workflow_error}")
                 raise workflow_error
                 
         except Exception as e:

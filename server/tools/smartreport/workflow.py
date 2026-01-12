@@ -746,6 +746,9 @@ def collect_info_node(state: WorkflowState) -> WorkflowState:
         state["search_results"] = initial_temp_kb_results
     
     print(f"\n✅ collect_info 节点完成: 最终检索结果数 {len(state['search_results'])} 条")
+    print(f"[DEBUG] collect_info_node: 准备返回 state，当前时间: {time.strftime('%H:%M:%S')}")
+    print(f"[DEBUG] collect_info_node: search_results 数量: {len(state.get('search_results', []))}")
+    print(f"[DEBUG] collect_info_node: current_section: {state.get('current_section') is not None}")
     
     return state
 
@@ -842,10 +845,15 @@ def writing_node(state: WorkflowState) -> WorkflowState:
         if chart_requirement:
             print(f"  📊 需要图表: {chart_requirement.get('chart_type', 'unknown')}")
         print(f"  总耗时: {elapsed:.2f}秒")
+        print(f"[DEBUG] writing_node: 准备返回 state，当前时间: {time.strftime('%H:%M:%S')}")
+        print(f"[DEBUG] writing_node: state 中 written_content 长度: {len(state.get('written_content', ''))}")
+        print(f"[DEBUG] writing_node: state 中 written_citations 数量: {len(state.get('written_citations', []))}")
         
     except Exception as e:
+        print(f"[ERROR] writing_node 异常: {str(e)}")
         raise WorkflowError(f"撰写章节失败: {str(e)}") from e
     
+    print(f"[DEBUG] writing_node: 即将返回 state，时间: {time.strftime('%H:%M:%S')}")
     return state
 
 
@@ -853,17 +861,27 @@ def save_section_node(state: WorkflowState) -> WorkflowState:
     """保存章节节点 - 将完成的章节存入历史"""
     import time
     
+    print(f"[DEBUG] save_section_node: 开始执行，时间: {time.strftime('%H:%M:%S')}")
+    print(f"[DEBUG] save_section_node: state keys: {list(state.keys())}")
+    
     current_section = state.get("current_section")
     written_content = state.get("written_content", "")
     written_citations = state.get("written_citations", [])  # 获取引用信息
     chart_requirement = state.get("chart_requirement")  # 获取图表需求
     history_manager = state.get("history_manager")
     
+    print(f"[DEBUG] save_section_node: current_section = {current_section is not None}")
+    print(f"[DEBUG] save_section_node: written_content 长度 = {len(written_content)}")
+    print(f"[DEBUG] save_section_node: history_manager = {history_manager is not None}")
+    
     if not current_section:
+        print(f"[ERROR] save_section_node: current_section 为空")
         raise WorkflowError("当前章节信息为空")
     if not written_content:
+        print(f"[ERROR] save_section_node: written_content 为空")
         raise WorkflowError("章节内容为空")
     if not history_manager:
+        print(f"[ERROR] save_section_node: history_manager 未初始化")
         raise WorkflowError("历史管理器未初始化")
     
     print("\n" + "-" * 50)
@@ -946,6 +964,9 @@ def save_section_node(state: WorkflowState) -> WorkflowState:
     print(f"  包含二级标题: {len(level2_titles)} 个")
     print(f"  引用数: {len(written_citations)} 个")
     print(f"  总耗时: {elapsed:.2f}秒")
+    print(f"[DEBUG] save_section_node: 准备返回 state，当前时间: {time.strftime('%H:%M:%S')}")
+    print(f"[DEBUG] save_section_node: current_section_index 更新为: {state.get('current_section_index', 0)}")
+    print(f"[DEBUG] save_section_node: all_written_sections 数量: {len(state.get('all_written_sections', []))}")
     
     return state
 

@@ -58,29 +58,52 @@ async def run_deep_research(payload: DeepResearchRequest):
         def event_generator():
             """生成 SSE 事件"""
             nonlocal last_state
+            import time
+            chunk_count = 0
+            print(f"[DEBUG] event_generator: 开始，任务ID: {task_id}，时间: {time.strftime('%H:%M:%S')}")
             try:
-                for chunk in api.stream_workflow(
+                stream_iter = api.stream_workflow(
                     requirement=payload.requirement,
                     task_id=task_id,
                     outline=payload.outline
-                ):
+                )
+                print(f"[DEBUG] event_generator: stream_workflow 迭代器已创建")
+                
+                for chunk in stream_iter:
+                    chunk_count += 1
+                    print(f"[DEBUG] event_generator: 收到 chunk #{chunk_count}，长度: {len(chunk)} 字符，时间: {time.strftime('%H:%M:%S')}")
+                    
                     # chunk 已经是 JSON 字符串，尝试从中提取 state（用于客户端断开时的清理）
                     try:
-                        event_data = json.loads(chunk)
+                        event_data = json.loads(chunk.strip())
+                        event_type = event_data.get('type', 'unknown')
+                        node_name = event_data.get('node', 'unknown')
+                        print(f"[DEBUG] event_generator: chunk #{chunk_count} 类型: {event_type}，节点: {node_name}")
                         if event_data.get('state'):
                             last_state = event_data['state']
-                    except:
-                        pass
+                            print(f"[DEBUG] event_generator: 已更新 last_state")
+                    except Exception as e:
+                        print(f"[DEBUG] event_generator: 解析 chunk 失败: {e}，chunk 内容: {chunk[:200]}")
                     
                     # SSE 格式: "data: {json}\n\n"
-                    yield f"data: {chunk}\n\n"
+                    sse_data = f"data: {chunk}\n\n"
+                    print(f"[DEBUG] event_generator: 准备 yield SSE 数据，长度: {len(sse_data)} 字符")
+                    yield sse_data
+                    print(f"[DEBUG] event_generator: SSE 数据已 yield，时间: {time.strftime('%H:%M:%S')}")
+                
+                print(f"[DEBUG] event_generator: stream_workflow 迭代完成，共处理 {chunk_count} 个 chunk，时间: {time.strftime('%H:%M:%S')}")
             except GeneratorExit:
                 # 客户端断开连接，清理资源
+                print(f"[DEBUG] event_generator: GeneratorExit，客户端断开连接，任务ID: {task_id}，时间: {time.strftime('%H:%M:%S')}")
                 print(f"⚠️ 客户端断开连接，任务ID: {task_id}")
                 _cleanup_task_resources(task_id, last_state)
                 raise
             except Exception as e:
                 # 发送错误事件
+                import traceback
+                print(f"[ERROR] event_generator: 异常发生，任务ID: {task_id}，时间: {time.strftime('%H:%M:%S')}")
+                print(f"[ERROR] event_generator: 异常信息: {str(e)}")
+                print(f"[ERROR] event_generator: 异常堆栈:\n{traceback.format_exc()}")
                 error_data = json.dumps({
                     "type": "error",
                     "error": str(e),
