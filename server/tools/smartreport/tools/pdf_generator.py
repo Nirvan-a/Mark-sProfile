@@ -82,6 +82,7 @@ class PDFGenerator:
         output_path: Optional[str] = None,
         base_url: Optional[str] = None,
         wait_for_images: bool = True,
+        timeout: int = 30000,  # 30秒超时
     ) -> bytes:
         """
         生成 PDF
@@ -91,6 +92,7 @@ class PDFGenerator:
             output_path: 输出文件路径（可选，如果提供则保存到文件）
             base_url: 基础 URL（用于解析相对路径的图片）
             wait_for_images: 是否等待图片加载完成
+            timeout: 超时时间（毫秒），默认30秒
         
         Returns:
             PDF 文件的字节数据
@@ -102,20 +104,46 @@ class PDFGenerator:
         page = await self.browser.new_page()
         
         try:
+            # 设置页面超时
+            page.set_default_timeout(timeout)
+            
             # 设置视口大小（A4 纸张）
             await page.set_viewport_size({"width": 1200, "height": 1600})
             
-            # 设置内容
-            # 注意：set_content() 不支持 base_url 参数
-            # 我们已经在 _markdown_to_html() 中将相对路径转换为绝对路径
-            await page.set_content(html_content, wait_until="networkidle")
+            # 监听失败的资源请求，用于日志记录
+            failed_resources = []
+            def handle_request_failed(request):
+                failed_resources.append(str(request.url))
+                print(f"⚠️ [PDF生成] 资源请求失败: {request.url}")
             
-            # 等待图片加载完成
+            page.on("requestfailed", handle_request_failed)
+            
+            print(f"📄 [PDF生成] 开始设置页面内容，超时: {timeout}ms")
+            
+            # 设置内容，使用超时控制
+            # 使用 "load" 而不是 "networkidle" 来避免无限等待
+            try:
+                await page.set_content(html_content, wait_until="load", timeout=timeout)
+                print("✅ [PDF生成] 页面内容已加载")
+            except Exception as e:
+                print(f"⚠️ [PDF生成] 页面加载超时或失败: {e}，继续生成 PDF")
+                # 即使加载失败，也尝试生成 PDF
+            
+            # 等待图片加载完成（使用超时）
             if wait_for_images:
-                await page.wait_for_load_state("networkidle")
-                # 额外等待一段时间确保图片完全加载
-                await page.wait_for_timeout(1000)
+                try:
+                    # 等待所有图片加载完成，但设置超时
+                    await page.wait_for_load_state("domcontentloaded", timeout=5000)
+                    # 等待一小段时间让图片有机会加载，但不无限等待
+                    await page.wait_for_timeout(2000)
+                    print("✅ [PDF生成] 图片加载完成（或超时）")
+                except Exception as e:
+                    print(f"⚠️ [PDF生成] 等待图片加载超时: {e}，继续生成 PDF")
             
+            if failed_resources:
+                print(f"⚠️ [PDF生成] 以下资源加载失败: {failed_resources}")
+            
+            print("📄 [PDF生成] 开始生成 PDF...")
             # 生成 PDF
             pdf_bytes = await page.pdf(
                 format="A4",
@@ -127,7 +155,9 @@ class PDFGenerator:
                 },
                 print_background=True,  # 包含背景色和图片
                 prefer_css_page_size=False,
+                timeout=timeout,  # 设置 PDF 生成超时
             )
+            print(f"✅ [PDF生成] PDF 生成完成，大小: {len(pdf_bytes)} bytes")
             
             # 如果指定了输出路径，保存到文件
             if output_path:
@@ -138,6 +168,11 @@ class PDFGenerator:
             return pdf_bytes
             
         finally:
+            # 取消路由拦截
+            try:
+                await page.unroute("**/*")
+            except Exception:
+                pass
             await page.close()
     
     async def generate_pdf_from_markdown(
@@ -146,6 +181,7 @@ class PDFGenerator:
         title: str = "报告",
         output_path: Optional[str] = None,
         base_url: Optional[str] = None,
+        timeout: int = 30000,  # 30秒超时
     ) -> bytes:
         """
         从 Markdown 内容生成 PDF
@@ -155,11 +191,12 @@ class PDFGenerator:
             title: 报告标题
             output_path: 输出文件路径（可选）
             base_url: 基础 URL（用于解析图片路径）
+            timeout: 超时时间（毫秒），默认30秒
         
         Returns:
             PDF 文件的字节数据
         """
-        print(f"📄 [PDF生成] 开始生成PDF: title='{title}', base_url='{base_url}'")
+        print(f"📄 [PDF生成] 开始生成PDF: title='{title}', base_url='{base_url}', timeout={timeout}ms")
         print(f"📄 [PDF生成] Markdown内容长度: {len(markdown_content)} 字符")
         
         # 检查Markdown中是否包含图片
@@ -177,7 +214,7 @@ class PDFGenerator:
         print(f"📄 [PDF生成] HTML内容长度: {len(html_content)} 字符")
         
         # 生成 PDF
-        return await self.generate_pdf(html_content, output_path, base_url)
+        return await self.generate_pdf(html_content, output_path, base_url, timeout=timeout)
     
     def _markdown_to_html(self, markdown: str, title: str, base_url: Optional[str] = None) -> str:
         """
@@ -419,6 +456,7 @@ async def generate_pdf_from_markdown(
     markdown_content: str,
     title: str = "报告",
     base_url: Optional[str] = None,
+    timeout: int = 30000,  # 30秒超时
 ) -> bytes:
     """
     便捷函数：从 Markdown 生成 PDF（异步版本）
@@ -427,6 +465,7 @@ async def generate_pdf_from_markdown(
         markdown_content: Markdown 内容
         title: 报告标题
         base_url: 基础 URL（用于解析图片路径）
+        timeout: 超时时间（毫秒），默认30秒
     
     Returns:
         PDF 文件的字节数据
@@ -436,5 +475,6 @@ async def generate_pdf_from_markdown(
             markdown_content=markdown_content,
             title=title,
             base_url=base_url,
+            timeout=timeout,
         )
 

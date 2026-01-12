@@ -92,21 +92,41 @@ export function ReportPreview({
       `
       document.body.appendChild(loadingMsg)
       
-      // 调用后端 API 生成 PDF
-      const response = await fetch(`${apiBaseUrl}/api/smartreport/generate-pdf`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          content: content,
-          title: reportTitle || '报告',
-          base_url: apiBaseUrl,
-        }),
-      })
+      // 调用后端 API 生成 PDF（设置超时：70秒）
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 70000) // 70秒超时
+      
+      let response: Response
+      try {
+        response = await fetch(`${apiBaseUrl}/api/smartreport/generate-pdf`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            content: content,
+            title: reportTitle || '报告',
+            base_url: apiBaseUrl,
+          }),
+          signal: controller.signal,
+        })
+        clearTimeout(timeoutId)
+      } catch (error: any) {
+        clearTimeout(timeoutId)
+        // 移除加载提示
+        if (document.body.contains(loadingMsg)) {
+          document.body.removeChild(loadingMsg)
+        }
+        if (error.name === 'AbortError') {
+          throw new Error('PDF 生成超时，请稍后重试')
+        }
+        throw error
+      }
       
       // 移除加载提示
-      document.body.removeChild(loadingMsg)
+      if (document.body.contains(loadingMsg)) {
+        document.body.removeChild(loadingMsg)
+      }
       
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({ detail: '生成 PDF 失败' }))
@@ -127,6 +147,11 @@ export function ReportPreview({
       URL.revokeObjectURL(url)
       
     } catch (error) {
+      // 确保加载提示被移除
+      const existingMsg = document.querySelector('body > div[style*="position: fixed"][style*="z-index: 10000"]')
+      if (existingMsg && existingMsg.parentNode) {
+        existingMsg.parentNode.removeChild(existingMsg)
+      }
       console.error('PDF 生成失败:', error)
       alert(`生成 PDF 失败: ${error instanceof Error ? error.message : '未知错误'}\n\n如果 Playwright 未安装，请运行: pip install playwright && playwright install chromium`)
       

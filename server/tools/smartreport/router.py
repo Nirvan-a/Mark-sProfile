@@ -390,18 +390,35 @@ async def generate_pdf(payload: GeneratePDFRequest):
         "base_url": "http://localhost:8001"  // 可选，用于解析图片路径
     }
     """
+    import asyncio
     try:
         from .tools.pdf_generator import generate_pdf_from_markdown
         
         # 获取基础 URL（如果没有提供，使用默认值）
         base_url = payload.base_url or "http://localhost:8001"
         
-        # 生成 PDF（异步调用）
-        pdf_bytes = await generate_pdf_from_markdown(
-            markdown_content=payload.content,
-            title=payload.title,
-            base_url=base_url,
-        )
+        print(f"📄 [PDF API] 收到PDF生成请求: title='{payload.title}', base_url='{base_url}'")
+        
+        # 使用 asyncio.wait_for 添加整体超时（60秒）
+        try:
+            pdf_bytes = await asyncio.wait_for(
+                generate_pdf_from_markdown(
+                    markdown_content=payload.content,
+                    title=payload.title,
+                    base_url=base_url,
+                    timeout=30000,  # 30秒
+                ),
+                timeout=60.0  # 整体超时60秒
+            )
+            print(f"✅ [PDF API] PDF 生成成功，大小: {len(pdf_bytes)} bytes")
+        except asyncio.TimeoutError:
+            print("❌ [PDF API] PDF 生成超时（超过60秒）")
+            raise HTTPException(status_code=504, detail="PDF 生成超时，请稍后重试或联系管理员")
+        except Exception as e:
+            print(f"❌ [PDF API] PDF 生成过程中出错: {str(e)}")
+            import traceback
+            traceback.print_exc()
+            raise  # 重新抛出异常，让外层处理
         
         # 返回 PDF 文件
         from io import BytesIO
