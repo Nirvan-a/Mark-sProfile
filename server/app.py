@@ -117,6 +117,8 @@ cors_origins.extend([origin.strip() for origin in additional_origins if origin.s
 # 过滤掉空字符串
 cors_origins = [origin for origin in cors_origins if origin]
 
+print(f"🔒 CORS 允许的来源: {cors_origins}")
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=cors_origins,

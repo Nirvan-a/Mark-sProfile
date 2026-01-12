@@ -91,6 +91,13 @@ server {
     server_name api.mazhaofeng.com;
     client_max_body_size 100M;
 
+    # 允许 ACME 挑战通过
+    location /.well-known/acme-challenge/ {
+        allow all;
+        root /var/www/html;
+        try_files $uri =404;
+    }
+
     location / {
         proxy_pass http://localhost:8001;
         proxy_set_header Host $host;
@@ -154,3 +161,24 @@ docker run -d --name profile -p 8001:8001 \
   --restart=always profile:latest
 ```
 
+# 手动更新
+# SSH 连接服务器
+ssh root@121.41.228.247
+
+# 进入项目目录
+cd Mark-sProfile
+
+# 拉取最新代码
+git pull
+
+# 重新构建和运行
+docker build -t profile:latest .
+docker stop profile && docker rm profile
+docker run -d --name profile -p 8001:8001 \
+  -e DASHSCOPE_API_KEY=sk-ee3665e8d0a04e8786aaa86ea91ac963 \
+  -e TAVILY_API_KEY=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 \
+  -e CORS_ORIGINS=https://profile.mazhaofeng.com \
+  --restart=always profile:latest
+
+# 验证更新
+curl http://localhost:8001/api/health
