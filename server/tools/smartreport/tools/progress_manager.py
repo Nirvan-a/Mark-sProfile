@@ -33,6 +33,17 @@ class ProgressManager:
         if task_id in self._callbacks:
             del self._callbacks[task_id]
             print(f"✅ [ProgressManager] 注销回调: task_id={task_id}")
+            print(f"[DEBUG] ProgressManager: 当前回调数量: {len(self._callbacks)}")
+    
+    def clear_all_callbacks(self):
+        """清除所有回调（用于清理和调试）"""
+        count = len(self._callbacks)
+        self._callbacks.clear()
+        print(f"[DEBUG] ProgressManager: 已清除所有回调（共 {count} 个）")
+    
+    def get_callback_count(self) -> int:
+        """获取当前回调数量（用于监控）"""
+        return len(self._callbacks)
     
     def report_progress(self, task_id: str, progress_data: dict):
         """报告进度（从工作流节点调用）"""
