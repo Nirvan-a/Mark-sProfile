@@ -4,7 +4,9 @@ export async function onRequest(context) {
 
   try {
     // 构建目标API URL
-    const targetUrl = `http://121.41.228.247:8001/api/${params.path || ''}`;
+    // params.path 是数组形式，如 ['analyze'] 或 ['health']
+    const apiPath = Array.isArray(params.path) ? params.path.join('/') : (params.path || 'health');
+    const targetUrl = `http://121.41.228.247:8001/api/${apiPath}`;
 
     // 创建新请求
     const newRequest = new Request(targetUrl, {
