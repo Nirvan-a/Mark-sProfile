@@ -31,3 +31,5 @@ primary_region = "nrt"  # 东京区域（离中国较近），可选: hkg(香港
 # 示例: 
 #   flyctl scale count 1 --app profile-page-api  # 设置实例数量
 #   flyctl scale memory 768 --app profile-page-api  # 设置内存大小
+#
+# 自动部署：通过 GitHub Actions 自动部署（推送到 main 分支时触发）
