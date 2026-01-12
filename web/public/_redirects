@@ -1,7 +1,9 @@
 # Cloudflare Pages SPA 路由支持
-# 所有路由都重定向到 index.html，让前端路由处理
+# 排除 /api/* 路径，让 Cloudflare Functions 处理
+# 其他所有路由都重定向到 index.html，让前端路由处理
 
-/*    /index.html   200
+/api/*  /api/:splat  200
+/*      /index.html   200
 
 
 
