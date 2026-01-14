@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Any, Dict, Optional
 
 from fastapi import APIRouter, File, HTTPException, UploadFile
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
 
 from tools.askdata.code_executor import run_generated_code
@@ -18,6 +19,9 @@ from tools.askdata.excel_processor import main as process_excel
 
 # 创建工具路由
 router = APIRouter(prefix="/api")
+
+EXAMPLE_FILE_NAME = "industrial_production_demo.xlsx"
+EXAMPLE_FILE_PATH = Path(__file__).parent / "resources" / EXAMPLE_FILE_NAME
 
 
 @router.post("/analyze")
@@ -49,6 +53,19 @@ async def analyze_excel(file: UploadFile = File(...)):
         raise HTTPException(status_code=400, detail=result["errorMessage"])
 
     return build_response_with_path(result, stored_path)
+
+
+@router.get("/askdata/example-excel")
+async def download_example_excel():
+    """下载内置示例 Excel 文件"""
+    if not EXAMPLE_FILE_PATH.exists():
+        raise HTTPException(status_code=404, detail="示例文件不存在")
+
+    return FileResponse(
+        EXAMPLE_FILE_PATH,
+        filename=EXAMPLE_FILE_NAME,
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    )
 
 
 class CodeGenerationRequest(BaseModel):

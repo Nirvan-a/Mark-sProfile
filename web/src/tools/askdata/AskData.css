@@ -269,6 +269,7 @@ body {
   display: flex;
   gap: var(--spacing-md);
   align-items: center;
+  flex-wrap: wrap;
 }
 
 .upload-trigger {
@@ -306,7 +307,8 @@ body {
   cursor: pointer;
 }
 
-.clear-trigger {
+.clear-trigger,
+.download-trigger {
   border-radius: var(--radius-full);
   display: inline-flex;
   align-items: center;
@@ -321,15 +323,24 @@ body {
   transition: all var(--transition-fast);
 }
 
-.clear-trigger:hover:not(:disabled) {
+.clear-trigger:hover:not(:disabled),
+.download-trigger:hover:not(:disabled) {
   background: var(--color-border-primary);
   color: var(--color-text-secondary);
   border-color: var(--color-border-primary);
 }
 
-.clear-trigger:disabled {
+.clear-trigger:disabled,
+.download-trigger:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+.download-trigger {
+  background: var(--color-bg-primary);
+  color: var(--color-primary);
+  border-style: dashed;
+  box-shadow: 0 6px 18px rgba(37, 99, 235, 0.08);
 }
 
 .upload-meta {
@@ -717,10 +728,12 @@ body {
     flex-direction: row;
     gap: 8px;
     width: 100%;
+    flex-wrap: wrap;
   }
 
   .upload-trigger,
-  .clear-trigger {
+  .clear-trigger,
+  .download-trigger {
     flex: 1;
     padding: 12px 16px;
     font-size: 13px;

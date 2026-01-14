@@ -3,7 +3,7 @@
  * 封装该工具的所有 API 调用
  */
 
-import { apiPost, apiPostFormData } from '../../shared/api/client'
+import { apiPost, apiPostFormData, buildApiUrl } from '../../shared/api/client'
 
 export interface AnalysisResult {
   note?: string
@@ -92,5 +92,19 @@ export async function summarizeResult(
   request: SummarizationRequest
 ): Promise<SummarizationResponse> {
   return apiPost<SummarizationResponse>('/api/summarize-result', request)
+}
+
+/**
+ * 下载内置示例 Excel
+ */
+export async function downloadExampleExcel(): Promise<Blob> {
+  const url = buildApiUrl('/api/askdata/example-excel')
+  const response = await fetch(url)
+
+  if (!response.ok) {
+    throw new Error('下载示例失败，请稍后重试。')
+  }
+
+  return response.blob()
 }
 

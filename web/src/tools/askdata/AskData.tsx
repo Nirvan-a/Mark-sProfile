@@ -14,6 +14,7 @@ import { formatDuration, stringifyResult, truncate } from '../../shared/utils/fo
 import { HomeButton } from '../../shared/components'
 import {
   analyzeExcel,
+  downloadExampleExcel,
   executeCode,
   generateCode,
   summarizeResult,
@@ -45,6 +46,8 @@ type ExecutionLog = {
 }
 
 const MAX_ATTEMPTS = 3
+
+const SAMPLE_FILE_NAME = 'industrial_production_demo.xlsx'
 
 const MUSIC_TRACKS = [
   { name: 'Spring Flowers', src: springFlowers },
@@ -133,7 +136,9 @@ function App() {
     null
   )
   const [uploadError, setUploadError] = useState<string | null>(null)
+  const [downloadError, setDownloadError] = useState<string | null>(null)
   const [isUploading, setIsUploading] = useState(false)
+  const [isDownloadingExample, setIsDownloadingExample] = useState(false)
   const [canAsk, setCanAsk] = useState(false)
   const [storedFilePath, setStoredFilePath] = useState('')
   const [loadingPhase, setLoadingPhase] = useState<LoadingPhase>(null)
@@ -548,11 +553,13 @@ function App() {
     setStoredFilePath('')
     setCanAsk(false)
     setUploadError(null)
+    setDownloadError(null)
   }
 
   const processFile = async (file: File) => {
     setIsUploading(true)
     setUploadError(null)
+    setDownloadError(null)
     setCanAsk(false)
     setAnalysisResult(null)
     setStoredFilePath('')
@@ -593,6 +600,29 @@ function App() {
     if (!file) return
     await processFile(file)
     event.target.value = ''
+  }
+
+  const handleDownloadExample = async () => {
+    if (isDownloadingExample) return
+    setDownloadError(null)
+    try {
+      setIsDownloadingExample(true)
+      const blob = await downloadExampleExcel()
+      const url = window.URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = SAMPLE_FILE_NAME
+      document.body.appendChild(link)
+      link.click()
+      link.remove()
+      window.URL.revokeObjectURL(url)
+    } catch (error) {
+      setDownloadError(
+        (error as Error)?.message || '下载示例失败，请稍后重试。'
+      )
+    } finally {
+      setIsDownloadingExample(false)
+    }
   }
 
   useEffect(() => {
@@ -803,6 +833,14 @@ function App() {
                   清除文件
                 </button>
               )}
+              <button
+                type="button"
+                className="download-trigger"
+                onClick={handleDownloadExample}
+                disabled={isUploading || isDownloadingExample}
+              >
+                {isDownloadingExample ? '下载中…' : '下载示例'}
+              </button>
             </div>
             {excelMeta && (
               <div className="upload-meta">
@@ -811,6 +849,7 @@ function App() {
               </div>
             )}
             {uploadError && <p className="upload-error">{uploadError}</p>}
+            {downloadError && <p className="upload-error">{downloadError}</p>}
             {analysisResult?.note && !uploadError && (
               <>
                 <div className="analysis-summary markdown-body">

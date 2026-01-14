@@ -28,7 +28,7 @@ function getApiBaseUrl(): string {
 /**
  * 构建完整的 API 地址
  */
-function buildApiUrl(endpoint: string): string {
+export function buildApiUrl(endpoint: string): string {
   const baseUrl = getApiBaseUrl()
   // 如果 endpoint 已经是完整 URL，直接返回
   if (endpoint.startsWith('http://') || endpoint.startsWith('https://')) {
