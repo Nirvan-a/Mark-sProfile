@@ -55,4 +55,5 @@ nohup.out
 uploads/
 *.xlsx
 !sample.xlsx
+!server/tools/askdata/resources/industrial_production_demo.xlsx
 
